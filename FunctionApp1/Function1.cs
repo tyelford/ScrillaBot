@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Host;
@@ -15,10 +17,9 @@ namespace FunctionApp1
         {
 
             Newton n = new Newton();
-            var bal = await n.GetBalances();
-            
-            log.LogInformation(bal);
-            
+            var bal = await n.GetBalances("btc");
+
+            log.LogInformation(string.Join(',', bal));
         }
     }
 }

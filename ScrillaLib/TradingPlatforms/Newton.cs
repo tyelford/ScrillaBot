@@ -4,6 +4,8 @@ using System.Text;
 using System.Security.Cryptography;
 using System.Net.Http;
 using System.Threading.Tasks;
+using System.Text.Json;
+using System.Web;
 
 namespace ScrillaLib.TradingPlatforms
 {
@@ -17,37 +19,76 @@ namespace ScrillaLib.TradingPlatforms
         private readonly string ClientId = "";
         private readonly string SecretKey = "";
 
-        private string baseUrl = "https://api.newton.co/v1";
+        private string baseUrl = "https://api.newton.co";
 
-        public async Task<string> GetBalances()
+        /// <summary>
+        /// Get account balances
+        /// </summary>
+        /// <returns>Dictionary<string,decimal>/returns>
+        public async Task<Dictionary<string, decimal>> GetBalances(string asset = null)
         {
-            string url = $"{baseUrl}/balances";
+            string path = "/v1/balances";
+            string url = baseUrl + path;
 
             string requestEpochTime = GetEpochTime().ToString();
+            string NewtonApiAuth = CreateAuthenticationToken(
+                path,
+                requestEpochTime);
 
-            string NewtonApiAuth = CreateAuthenticationToken(requestEpochTime);
+            //Send the message to the API
+            using (HttpClient client = new HttpClient())
+            {
+                client.DefaultRequestHeaders.Add("NewtonAPIAuth", NewtonApiAuth);
+                client.DefaultRequestHeaders.Add("NewtonDate", requestEpochTime);
+                client.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0");
 
-            //Tset this function
-            HttpClient client = new HttpClient();
-            client.DefaultRequestHeaders.Add("NewtonApiAuth", NewtonApiAuth);
-            client.DefaultRequestHeaders.Add("NewtonDate", requestEpochTime);
+                if(asset != null)
+                {
+                    var qParams = new Dictionary<string, string>();
+                    qParams.Add("asset", asset);
+                    url = AddQueryParamsToUrl(qParams, url);
+                }
 
-            var stringTask = await client.GetStringAsync(url);
+                var balances = await client.GetStringAsync(url);
 
-            return stringTask;
+                return JsonSerializer.Deserialize<Dictionary<string,decimal>>(balances);
+            }
         }
 
 
 
-        private string CreateAuthenticationToken(string headerDate)
+        private string AddQueryParamsToUrl(Dictionary<string,string> queryParams, string url)
         {
+            var builder = new UriBuilder(url);
+            var query = HttpUtility.ParseQueryString(builder.Query);
+            
+            foreach(var q in queryParams)
+            {
+                query[q.Key] = q.Value;
+            }
+            builder.Query = query.ToString();
+            return builder.ToString();
+        }
 
+
+        /// <summary>
+        /// Create the authorization header
+        /// Deafults set for simple get request but can be included for Posts
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="headerDate"></param>
+        /// <param name="contentType"></param>
+        /// <param name="method"></param>
+        /// <param name="body"></param>
+        /// <returns></returns>
+        private string CreateAuthenticationToken(string path, string headerDate, string contentType = "", string method = "GET", string body = "")
+        {
             string[] signatureParams =
             {
-                "GET",    //Request Type
-                "",       //Content type Blank for GET, application/json for POST etc
-                "/api/PATH",   //URL path
-                "",      //Body
+                method,    //Request Type
+                contentType,       //Content type Blank for GET, application/json for POST etc
+                path,   //URL path
+                body,      //Body
                 headerDate
             };
 
@@ -56,7 +97,6 @@ namespace ScrillaLib.TradingPlatforms
             byte[] computedSignature = HashHMAC(StringEncode(SecretKey), StringEncode(signatureData));
 
             return  $"{ClientId}:{Convert.ToBase64String(computedSignature)}";
-
         }
 
 
