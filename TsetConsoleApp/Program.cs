@@ -1,4 +1,6 @@
-﻿using System;
+﻿using ScrillaLib.TradingPlatforms.Newton;
+using System;
+using System.Threading.Tasks;
 
 namespace TsetConsoleApp
 {
@@ -14,9 +16,19 @@ namespace TsetConsoleApp
     {
         public Tester()
         {
-            ScrillaLib.TradingPlatforms.Newton n = new ScrillaLib.TradingPlatforms.Newton();
-            var s = n.GetBalances().Result;
-            Console.WriteLine(s);
+            Task.Run(() => this.TestApiCalls()).Wait();
+        }
+
+        /// <summary>
+        /// Test some api calls here asyncly
+        /// </summary>
+        /// <returns></returns>
+        private async Task TestApiCalls()
+        {
+            Newton n = new Newton();
+            var f = await n.GetFeesAsync();
+
+            return;
         }
     }
 }

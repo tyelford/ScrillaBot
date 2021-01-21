@@ -6,8 +6,9 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Text.Json;
 using System.Web;
+using ScrillaLib.TradingPlatforms.Newton.Models;
 
-namespace ScrillaLib.TradingPlatforms
+namespace ScrillaLib.TradingPlatforms.Newton
 {
 
     //For Reference: 
@@ -21,11 +22,35 @@ namespace ScrillaLib.TradingPlatforms
 
         private string baseUrl = "https://api.newton.co";
 
+
+        #region PublicEndpoints
+
+        public async Task<Fees> GetFeesAsync()
+        {
+            string path = "/v1/fees";
+            string url = baseUrl + path;
+
+            //Send the message to the API
+            using (HttpClient client = new HttpClient())
+            {
+                client.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0");
+
+                var fees = await client.GetStringAsync(url);
+
+                return JsonSerializer.Deserialize<Fees>(fees, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            }
+        }
+
+        #endregion
+
+
+        #region PrivateEndpoints
+
         /// <summary>
         /// Get account balances
         /// </summary>
         /// <returns>Dictionary<string,decimal>/returns>
-        public async Task<Dictionary<string, decimal>> GetBalances(string asset = null)
+        public async Task<Dictionary<string, decimal>> GetBalancesAsync(string asset = null)
         {
             string path = "/v1/balances";
             string url = baseUrl + path;
@@ -56,7 +81,71 @@ namespace ScrillaLib.TradingPlatforms
         }
 
 
+        /// <summary>
+        /// Get order history
+        /// </summary>
+        /// <param name="startDate"></param>
+        /// <param name="endDate"></param>
+        /// <param name="limit"></param>
+        /// <param name="offset"></param>
+        /// <param name="symbol"></param>
+        /// <param name="timeInForce"></param>
+        /// <returns></returns>
+        public async Task<string> GetOrderHistoryAsync(
+            DateTime? startDate = null,
+            DateTime? endDate = null,
+            int? limit = null,
+            int? offset = null,
+            string symbol = null,
+            string timeInForce = null)
+        {
+            string path = "/v1/order/history";
+            string url = baseUrl + path;
 
+            string requestEpochTime = GetEpochTime().ToString();
+            string NewtonApiAuth = CreateAuthenticationToken(
+                path,
+                requestEpochTime);
+
+            //Send the message to the API
+            using (HttpClient client = new HttpClient())
+            {
+                client.DefaultRequestHeaders.Add("NewtonAPIAuth", NewtonApiAuth);
+                client.DefaultRequestHeaders.Add("NewtonDate", requestEpochTime);
+                client.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0");
+
+                var qParams = new Dictionary<string, string>();
+
+                if (startDate != null)
+                {
+                    var startEpoch = GetEpochTime(startDate);
+                    qParams.Add("start_date", startEpoch.ToString());
+                }
+                if (endDate != null)
+                {
+                    var endEpoch = GetEpochTime(endDate);
+                    qParams.Add("end_date", endEpoch.ToString());
+                }
+                if (limit != null) qParams.Add("limit", limit.ToString());
+                if (offset != null) qParams.Add("offset", offset.ToString());
+                if (symbol != null) qParams.Add("symbol", symbol);
+                if (timeInForce != null) qParams.Add("time_in_force", timeInForce);
+
+                if (qParams.Count > 0)
+                {
+                    url = AddQueryParamsToUrl(qParams, url);
+                }
+                var orderHistory = await client.GetStringAsync(url);
+
+                //TODO: This needs to be deserialized when I know what the data looks like
+                return orderHistory;
+            }
+        }
+
+        #endregion
+
+
+        #region Helpers
         private string AddQueryParamsToUrl(Dictionary<string,string> queryParams, string url)
         {
             var builder = new UriBuilder(url);
@@ -112,10 +201,19 @@ namespace ScrillaLib.TradingPlatforms
             return encoding.GetBytes(text);
         }
 
-        private long GetEpochTime()
+        private long GetEpochTime(DateTime? suppliedTime = null)
         {
-            TimeSpan t = DateTime.UtcNow - new DateTime(1970, 1, 1);
+            TimeSpan t = new TimeSpan();
+            if(suppliedTime == null)
+            {
+                t = DateTime.UtcNow - new DateTime(1970, 1, 1);
+            }
+            else
+            {
+                t = (DateTime)suppliedTime - new DateTime(1970, 1, 1);
+            }
             return (long)t.TotalSeconds;
         }
+        #endregion
     }
 }
