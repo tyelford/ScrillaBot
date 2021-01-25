@@ -26,7 +26,7 @@ namespace TsetConsoleApp
         private async Task TestApiCalls()
         {
             Newton n = new Newton();
-            var f = await n.GetFeesAsync();
+            var f = await n.GetTickSizes();
 
             return;
         }
