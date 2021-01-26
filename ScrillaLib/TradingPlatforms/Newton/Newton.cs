@@ -14,7 +14,7 @@ namespace ScrillaLib.TradingPlatforms.Newton
     //For Reference: 
     //https://newton.stoplight.io/docs/newton-api-docs/docs/authentication/Authentication.md
 
-    public class Newton: ITradingPlatform
+    public class Newton : ITradingPlatform
     {
 
         private readonly string ClientId = "";
@@ -32,7 +32,12 @@ namespace ScrillaLib.TradingPlatforms.Newton
         /// <param name="isPublic"></param>
         /// <param name="queryParams"></param>
         /// <returns></returns>
-        private async Task<string> SendApiMessage(string path, bool isPublic, Dictionary<string,string> queryParams)
+        private async Task<string> SendApiMessageAsync(
+            string path, 
+            HttpMethod method, 
+            bool isPublic, 
+            Dictionary<string, string> queryParams,
+            string data = null)
         {
             string url = baseUrl + path;
             try
@@ -54,27 +59,59 @@ namespace ScrillaLib.TradingPlatforms.Newton
 
                     }
 
-                    if(queryParams != null && queryParams.Count > 0)
+                    if (queryParams != null && queryParams.Count > 0)
                     {
                         //Assign query paramter to url
                         url = AddQueryParamsToUrl(queryParams, url);
                     }
 
-                    var res = await client.GetAsync(url);
-                    if (res.IsSuccessStatusCode)
+                    //Create a get message
+                    if(method == HttpMethod.Get)
                     {
-                        return await res.Content.ReadAsStringAsync();
+                        var res = await client.GetAsync(url);
+                        if (res.IsSuccessStatusCode)
+                        {
+                            return await res.Content.ReadAsStringAsync();
+                        }
+                        else
+                        {
+                            //This probably isn't the best way to handle a non-sucessful status
+                            //code but it'll do for now
+                            throw new Exception($"API returned: {res.StatusCode.ToString()}");
+                        }
                     }
+
+                    //Create a post message
+                    else if(method == HttpMethod.Post)
+                    {
+                        HttpContent content = null;
+                        if(data != null)
+                        {
+                            content = new StringContent(data, Encoding.UTF8, "application/json");
+                        }
+                        var res = await client.PostAsync(url, content);
+
+                        if (res.IsSuccessStatusCode)
+                        {
+                            return await res.Content.ReadAsStringAsync();
+                        }
+                        else
+                        {
+                            //This probably isn't the best way to handle a non-sucessful status
+                            //code but it'll do for now
+                            throw new Exception($"API returned: {res.StatusCode.ToString()}");
+                        }
+                    }
+
+                    //Catch all
                     else
                     {
-                        //This probably isn't the best way to handle a non-sucessful status
-                        //code but it'll do for now
-                        throw new Exception($"API returned: {res.StatusCode.ToString()}");
+                        throw new Exception($"Method not implemented in this library - method: {method}");
                     }
 
                 }
             }
-            catch(Exception err)
+            catch (Exception err)
             {
                 throw new Exception($"Problem creating and sending message to API {url} - {err.Message}");
             }
@@ -85,17 +122,17 @@ namespace ScrillaLib.TradingPlatforms.Newton
         public async Task<Fees> GetFeesAsync()
         {
             string path = $"{apiVersion}/fees";
-            var fees = await SendApiMessage(path, true, null);
+            var fees = await SendApiMessageAsync(path, HttpMethod.Get, true, null);
             return JsonSerializer.Deserialize<Fees>(fees, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         }
 
-        public async Task<bool> GetHealthCheck()
+        public async Task<bool> GetHealthCheckAsync()
         {
             //This is hacky -- taking advantage of the upper exception
             try
             {
                 string path = "/v1/health-check";
-                var isAlive = await SendApiMessage(path, true, null);
+                var isAlive = await SendApiMessageAsync(path, HttpMethod.Get, true, null);
                 return true;
             }
             catch (Exception)
@@ -105,31 +142,31 @@ namespace ScrillaLib.TradingPlatforms.Newton
 
         }
 
-        public async Task<Dictionary<string,TradeLimits>> GetMaximumTradeAmounts()
+        public async Task<Dictionary<string, TradeLimits>> GetMaximumTradeAmountsAsync()
         {
             string path = $"{apiVersion}/order/maximums";
-            string max = await SendApiMessage(path, true, null);
+            string max = await SendApiMessageAsync(path, HttpMethod.Get, true, null);
             return JsonSerializer.Deserialize<Dictionary<string, TradeLimits>>(max, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         }
 
-        public async Task<Dictionary<string, TradeLimits>> GetMinimumTradeAmounts()
+        public async Task<Dictionary<string, TradeLimits>> GetMinimumTradeAmountsAsync()
         {
             string path = $"{apiVersion}/order/minimums";
-            string min = await SendApiMessage(path, true, null);
+            string min = await SendApiMessageAsync(path, HttpMethod.Get, true, null);
             return JsonSerializer.Deserialize<Dictionary<string, TradeLimits>>(min, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         }
 
-        public async Task<Dictionary<string, Ticks>> GetTickSizes()
+        public async Task<Dictionary<string, Ticks>> GetTickSizesAsync()
         {
             string path = $"{apiVersion}/order/tick-sizes";
-            string ticks = await SendApiMessage(path, true, null);
+            string ticks = await SendApiMessageAsync(path, HttpMethod.Get, true, null);
             return JsonSerializer.Deserialize<Dictionary<string, Ticks>>(ticks, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         }
 
-        public async Task<List<string>> GetSymbols()
+        public async Task<List<string>> GetSymbolsAsync()
         {
             string path = $"{apiVersion}/symbols";
-            string symbols = await SendApiMessage(path, true, null);
+            string symbols = await SendApiMessageAsync(path, HttpMethod.Get, true, null);
             return JsonSerializer.Deserialize<List<string>>(symbols);
         }
 
@@ -146,16 +183,37 @@ namespace ScrillaLib.TradingPlatforms.Newton
             string path = $"{apiVersion}/balances";
 
             var qParams = new Dictionary<string, string>();
-            if(asset != null)
+            if (asset != null)
             {
                 qParams.Add("asset", asset);
             }
 
-            var balances = await SendApiMessage(path, false, qParams);
+            var balances = await SendApiMessageAsync(path, HttpMethod.Get, false, qParams);
 
-            return JsonSerializer.Deserialize<Dictionary<string,decimal>>(balances);
+            return JsonSerializer.Deserialize<Dictionary<string, decimal>>(balances);
         }
 
+
+        /// <summary>
+        /// Cancel an order
+        /// What order are we to cancel?
+        /// </summary>
+        /// <returns></returns>
+        public async Task<bool> CancelOrderAsync()
+        {
+            string path = $"{apiVersion}/order/cancel";
+            try
+            {
+                var canceled = await SendApiMessageAsync(path, HttpMethod.Post, false, null);
+                return true;
+            }
+
+            catch (Exception)
+            {
+                // Problem cancelling order
+                return false;
+            }
+        }
 
         /// <summary>
         /// Get order history
@@ -194,22 +252,59 @@ namespace ScrillaLib.TradingPlatforms.Newton
             if (symbol != null) qParams.Add("symbol", symbol);
             if (timeInForce != null) qParams.Add("time_in_force", timeInForce);
 
-            var orderHistory = await SendApiMessage(path, false, qParams);
+            var orderHistory = await SendApiMessageAsync(path, HttpMethod.Get, false, qParams);
 
             //TODO: This needs to be deserialized when I know what the data looks like
             return orderHistory;
         }
 
+
+        /// <summary>
+        /// Create a new order
+        /// </summary>
+        /// <returns></returns>
+        public async Task CreateNewOrderAsync()
+        {
+            //TODO: The documentation here is not good, needs review
+            string path = $"{apiVersion}/order/new";
+            var newOrder = await SendApiMessageAsync(path, HttpMethod.Post, false, null);
+
+        }
+
+
+        public async Task<string> GetOpenOrdersAsync(
+            int? limit = null,
+            int? offset = null,
+            string symbol = null,
+            string timeInForce = null)
+        {
+            string path = $"{apiVersion}/order/open";
+
+            var qParams = new Dictionary<string, string>();
+
+            if (limit != null) qParams.Add("limit", limit.ToString());
+            if (offset != null) qParams.Add("offset", offset.ToString());
+            if (symbol != null) qParams.Add("symbol", symbol);
+            if (timeInForce != null) qParams.Add("time_in_force", timeInForce);
+
+            var openOrders = await SendApiMessageAsync(path, HttpMethod.Get, false, qParams);
+
+            //TODO: This needs to be deserialized when I know what the data looks like
+            return openOrders;
+        }
+
+
+
         #endregion
 
 
         #region Helpers
-        private string AddQueryParamsToUrl(Dictionary<string,string> queryParams, string url)
+        private string AddQueryParamsToUrl(Dictionary<string, string> queryParams, string url)
         {
             var builder = new UriBuilder(url);
             var query = HttpUtility.ParseQueryString(builder.Query);
-            
-            foreach(var q in queryParams)
+
+            foreach (var q in queryParams)
             {
                 query[q.Key] = q.Value;
             }
@@ -243,7 +338,7 @@ namespace ScrillaLib.TradingPlatforms.Newton
 
             byte[] computedSignature = HashHMAC(StringEncode(SecretKey), StringEncode(signatureData));
 
-            return  $"{ClientId}:{Convert.ToBase64String(computedSignature)}";
+            return $"{ClientId}:{Convert.ToBase64String(computedSignature)}";
         }
 
 
@@ -262,7 +357,7 @@ namespace ScrillaLib.TradingPlatforms.Newton
         private long GetEpochTime(DateTime? suppliedTime = null)
         {
             TimeSpan t = new TimeSpan();
-            if(suppliedTime == null)
+            if (suppliedTime == null)
             {
                 t = DateTime.UtcNow - new DateTime(1970, 1, 1);
             }
