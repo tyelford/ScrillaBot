@@ -6,7 +6,8 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Text.Json;
 using System.Web;
-using ScrillaLib.TradingPlatforms.Newton.Models;
+using ScrillaLib.Models.Newton;
+using ScrillaLib.Models.Common;
 
 namespace ScrillaLib.TradingPlatforms.Newton
 {
@@ -231,7 +232,7 @@ namespace ScrillaLib.TradingPlatforms.Newton
             int? limit = null,
             int? offset = null,
             string symbol = null,
-            string timeInForce = null)
+            TimeInForce.Type timeInForce = TimeInForce.Type.NONE)
         {
             string path = $"{apiVersion}/order/history";
 
@@ -250,7 +251,7 @@ namespace ScrillaLib.TradingPlatforms.Newton
             if (limit != null) qParams.Add("limit", limit.ToString());
             if (offset != null) qParams.Add("offset", offset.ToString());
             if (symbol != null) qParams.Add("symbol", symbol);
-            if (timeInForce != null) qParams.Add("time_in_force", timeInForce);
+            if (timeInForce != TimeInForce.Type.NONE) qParams.Add("time_in_force", timeInForce.ToString());
 
             var orderHistory = await SendApiMessageAsync(path, HttpMethod.Get, false, qParams);
 
@@ -276,7 +277,7 @@ namespace ScrillaLib.TradingPlatforms.Newton
             int? limit = null,
             int? offset = null,
             string symbol = null,
-            string timeInForce = null)
+            TimeInForce.Type timeInForce = TimeInForce.Type.NONE)
         {
             string path = $"{apiVersion}/order/open";
 
@@ -285,7 +286,7 @@ namespace ScrillaLib.TradingPlatforms.Newton
             if (limit != null) qParams.Add("limit", limit.ToString());
             if (offset != null) qParams.Add("offset", offset.ToString());
             if (symbol != null) qParams.Add("symbol", symbol);
-            if (timeInForce != null) qParams.Add("time_in_force", timeInForce);
+            if (timeInForce != TimeInForce.Type.NONE) qParams.Add("time_in_force", timeInForce.ToString());
 
             var openOrders = await SendApiMessageAsync(path, HttpMethod.Get, false, qParams);
 

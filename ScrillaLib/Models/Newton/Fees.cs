@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ScrillaLib.TradingPlatforms.Newton.Models
+namespace ScrillaLib.Models.Newton
 {
     public class Fees
     {
