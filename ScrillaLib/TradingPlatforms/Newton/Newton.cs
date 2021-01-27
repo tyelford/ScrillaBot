@@ -53,7 +53,10 @@ namespace ScrillaLib.TradingPlatforms.Newton
                         string requestEpochTime = GetEpochTime().ToString();
                         string NewtonApiAuth = CreateAuthenticationToken(
                             path,
-                            requestEpochTime);
+                            requestEpochTime,
+                            method == HttpMethod.Post ? "application/json" : "",
+                            method.ToString().ToUpper(),
+                            data != null ? data : "");
 
                         client.DefaultRequestHeaders.Add("NewtonAPIAuth", NewtonApiAuth);
                         client.DefaultRequestHeaders.Add("NewtonDate", requestEpochTime);
