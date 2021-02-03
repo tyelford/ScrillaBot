@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace ScrillaLib.TradingPlatforms.BitBuy
 {
     //For Reference:
     //https://bitbuy.ca/assets/api/docs/#/
 
-    public class BitBuy : ITradingPlatform
+    public class BitBuy : TradingPlatform
     {
         private readonly string ClientId = "";
         private readonly string SecretKey = "";
@@ -19,13 +20,27 @@ namespace ScrillaLib.TradingPlatforms.BitBuy
         private string baseUrl = "https://partner.bcm.exchange/api";
 
 
+
+        public async Task SendApiMessage(Uri uri)
+        {
+            //Uri i = new Uri("http://www.mercymack")
+        }
+
+
+
         #region helpers
-        private string CreateAuthenticationToken(string path, string queryString, int contentLength)
+        protected new Dictionary<string, string> GetAuthHeaders(
+            Uri uri,
+            string headerDate,
+            string contentType = "",
+            string method = "GET",
+            string body = "",
+            string contentLength = "")
         {
             var signatureData = JsonSerializer.Serialize(new
             {
-                path = path,
-                query = queryString,
+                path = uri.AbsolutePath,
+                query = uri.Query,
                 content_length = contentLength
             });
             signatureData = signatureData.Replace("content_length", "content-length");
@@ -38,35 +53,13 @@ namespace ScrillaLib.TradingPlatforms.BitBuy
 
             byte[] computedSignature = HashHMAC(StringEncode(SecretKey), StringEncode(signatureData));
 
-            return $"{ClientId}:{Convert.ToBase64String(computedSignature)}";
+            Dictionary<string, string> authHeaders = new Dictionary<string, string>();
+
+            //var s =  $"{ClientId}:{Convert.ToBase64String(computedSignature)}";
+
+            return authHeaders;
         }
 
-
-        private byte[] HashHMAC(byte[] key, byte[] message)
-        {
-            var hash = new HMACSHA256(key);
-            return hash.ComputeHash(message);
-        }
-
-        private byte[] StringEncode(string text)
-        {
-            var encoding = new UTF8Encoding();
-            return encoding.GetBytes(text);
-        }
-
-        private long GetEpochTime(DateTime? suppliedTime = null)
-        {
-            TimeSpan t = new TimeSpan();
-            if (suppliedTime == null)
-            {
-                t = DateTime.UtcNow - new DateTime(1970, 1, 1);
-            }
-            else
-            {
-                t = (DateTime)suppliedTime - new DateTime(1970, 1, 1);
-            }
-            return (long)t.TotalSeconds;
-        }
         #endregion
     }
 }

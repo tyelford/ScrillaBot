@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Security.Cryptography;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Text.Json;
-using System.Web;
 using ScrillaLib.Models.Newton;
 using ScrillaLib.Models.Common;
 
@@ -15,7 +12,7 @@ namespace ScrillaLib.TradingPlatforms.Newton
     //For Reference: 
     //https://newton.stoplight.io/docs/newton-api-docs/docs/authentication/Authentication.md
 
-    public class Newton : ITradingPlatform
+    public class Newton : TradingPlatform
     {
 
         private readonly string ClientId = "";
@@ -33,100 +30,103 @@ namespace ScrillaLib.TradingPlatforms.Newton
         /// <param name="isPublic"></param>
         /// <param name="queryParams"></param>
         /// <returns></returns>
-        private async Task<string> SendApiMessageAsync(
-            string path, 
-            HttpMethod method, 
-            bool isPublic, 
-            Dictionary<string, string> queryParams,
-            string data = null)
-        {
-            string url = baseUrl + path;
-            try
-            {
-                using (HttpClient client = new HttpClient())
-                {
-                    //Create headers
-                    client.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0");
-                    if (!isPublic)
-                    {
-                        //Auth header for private apis
-                        string requestEpochTime = GetEpochTime().ToString();
-                        string NewtonApiAuth = CreateAuthenticationToken(
-                            path,
-                            requestEpochTime,
-                            method == HttpMethod.Post ? "application/json" : "",
-                            method.ToString().ToUpper(),
-                            data != null ? data : "");
+        //private async Task<string> SendApiMessageAsync(
+        //    string path, 
+        //    HttpMethod method, 
+        //    bool isPublic, 
+        //    Dictionary<string, string> queryParams,
+        //    string data = null)
+        //{
+        //    string url = baseUrl + path;
+        //    try
+        //    {
+        //        using (HttpClient client = new HttpClient())
+        //        {
+        //            //Create headers
+        //            client.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0");
+        //            if (!isPublic)
+        //            {
+        //                //Auth header for private apis
+        //                string requestEpochTime = GetEpochTime().ToString();
+        //                string NewtonApiAuth = CreateAuthenticationToken(
+        //                    path,
+        //                    requestEpochTime,
+        //                    method == HttpMethod.Post ? "application/json" : "",
+        //                    method.ToString().ToUpper(),
+        //                    data != null ? data : "");
 
-                        client.DefaultRequestHeaders.Add("NewtonAPIAuth", NewtonApiAuth);
-                        client.DefaultRequestHeaders.Add("NewtonDate", requestEpochTime);
+        //                client.DefaultRequestHeaders.Add("NewtonAPIAuth", NewtonApiAuth);
+        //                client.DefaultRequestHeaders.Add("NewtonDate", requestEpochTime);
 
-                    }
+        //            }
 
-                    if (queryParams != null && queryParams.Count > 0)
-                    {
-                        //Assign query paramter to url
-                        url = AddQueryParamsToUrl(queryParams, url);
-                    }
+        //            if (queryParams != null && queryParams.Count > 0)
+        //            {
+        //                //Assign query paramter to url
+        //                url = AddQueryParamsToUrl(queryParams, url);
+        //            }
 
-                    //Create a get message
-                    if(method == HttpMethod.Get)
-                    {
-                        var res = await client.GetAsync(url);
-                        if (res.IsSuccessStatusCode)
-                        {
-                            return await res.Content.ReadAsStringAsync();
-                        }
-                        else
-                        {
-                            //This probably isn't the best way to handle a non-sucessful status
-                            //code but it'll do for now
-                            throw new Exception($"API returned: {res.StatusCode.ToString()}");
-                        }
-                    }
+        //            //Create a get message
+        //            if(method == HttpMethod.Get)
+        //            {
+        //                var res = await client.GetAsync(url);
+        //                if (res.IsSuccessStatusCode)
+        //                {
+        //                    return await res.Content.ReadAsStringAsync();
+        //                }
+        //                else
+        //                {
+        //                    //This probably isn't the best way to handle a non-sucessful status
+        //                    //code but it'll do for now
+        //                    throw new Exception($"API returned: {res.StatusCode.ToString()}");
+        //                }
+        //            }
 
-                    //Create a post message
-                    else if(method == HttpMethod.Post)
-                    {
-                        HttpContent content = null;
-                        if(data != null)
-                        {
-                            content = new StringContent(data, Encoding.UTF8, "application/json");
-                        }
-                        var res = await client.PostAsync(url, content);
+        //            //Create a post message
+        //            else if(method == HttpMethod.Post)
+        //            {
+        //                HttpContent content = null;
+        //                if(data != null)
+        //                {
+        //                    content = new StringContent(data, Encoding.UTF8, "application/json");
+        //                }
+        //                var res = await client.PostAsync(url, content);
 
-                        if (res.IsSuccessStatusCode)
-                        {
-                            return await res.Content.ReadAsStringAsync();
-                        }
-                        else
-                        {
-                            //This probably isn't the best way to handle a non-sucessful status
-                            //code but it'll do for now
-                            throw new Exception($"API returned: {res.StatusCode.ToString()}");
-                        }
-                    }
+        //                if (res.IsSuccessStatusCode)
+        //                {
+        //                    return await res.Content.ReadAsStringAsync();
+        //                }
+        //                else
+        //                {
+        //                    //This probably isn't the best way to handle a non-sucessful status
+        //                    //code but it'll do for now
+        //                    throw new Exception($"API returned: {res.StatusCode.ToString()}");
+        //                }
+        //            }
 
-                    //Catch all
-                    else
-                    {
-                        throw new Exception($"Method not implemented in this library - method: {method}");
-                    }
+        //            //Catch all
+        //            else
+        //            {
+        //                throw new Exception($"Method not implemented in this library - method: {method}");
+        //            }
 
-                }
-            }
-            catch (Exception err)
-            {
-                throw new Exception($"Problem creating and sending message to API {url} - {err.Message}");
-            }
-        }
+        //        }
+        //    }
+        //    catch (Exception err)
+        //    {
+        //        throw new Exception($"Problem creating and sending message to API {url} - {err.Message}");
+        //    }
+        //}
+
 
         #region PublicEndpoints
 
         public async Task<Fees> GetFeesAsync()
         {
             string path = $"{apiVersion}/fees";
-            var fees = await SendApiMessageAsync(path, HttpMethod.Get, true, null);
+            var uri = BuildUri(baseUrl, path);
+
+            var fees = await SendApiMessageAsync(uri, HttpMethod.Get, true);
             return JsonSerializer.Deserialize<Fees>(fees, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         }
 
@@ -135,8 +135,9 @@ namespace ScrillaLib.TradingPlatforms.Newton
             //This is hacky -- taking advantage of the upper exception
             try
             {
-                string path = "/v1/health-check";
-                var isAlive = await SendApiMessageAsync(path, HttpMethod.Get, true, null);
+                string path = $"{apiVersion}/health-check";
+                var uri = BuildUri(baseUrl, path);
+                var isAlive = await SendApiMessageAsync(uri, HttpMethod.Get, true);
                 return true;
             }
             catch (Exception)
@@ -149,28 +150,32 @@ namespace ScrillaLib.TradingPlatforms.Newton
         public async Task<Dictionary<string, TradeLimits>> GetMaximumTradeAmountsAsync()
         {
             string path = $"{apiVersion}/order/maximums";
-            string max = await SendApiMessageAsync(path, HttpMethod.Get, true, null);
+            var uri = BuildUri(baseUrl, path);
+            string max = await SendApiMessageAsync(uri, HttpMethod.Get, true);
             return JsonSerializer.Deserialize<Dictionary<string, TradeLimits>>(max, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         }
 
         public async Task<Dictionary<string, TradeLimits>> GetMinimumTradeAmountsAsync()
         {
             string path = $"{apiVersion}/order/minimums";
-            string min = await SendApiMessageAsync(path, HttpMethod.Get, true, null);
+            var uri = BuildUri(baseUrl, path);
+            string min = await SendApiMessageAsync(uri, HttpMethod.Get, true);
             return JsonSerializer.Deserialize<Dictionary<string, TradeLimits>>(min, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         }
 
         public async Task<Dictionary<string, Ticks>> GetTickSizesAsync()
         {
             string path = $"{apiVersion}/order/tick-sizes";
-            string ticks = await SendApiMessageAsync(path, HttpMethod.Get, true, null);
+            var uri = BuildUri(baseUrl, path);
+            string ticks = await SendApiMessageAsync(uri, HttpMethod.Get, true);
             return JsonSerializer.Deserialize<Dictionary<string, Ticks>>(ticks, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         }
 
         public async Task<List<string>> GetSymbolsAsync()
         {
             string path = $"{apiVersion}/symbols";
-            string symbols = await SendApiMessageAsync(path, HttpMethod.Get, true, null);
+            var uri = BuildUri(baseUrl, path);
+            string symbols = await SendApiMessageAsync(uri, HttpMethod.Get, true);
             return JsonSerializer.Deserialize<List<string>>(symbols);
         }
 
@@ -185,14 +190,16 @@ namespace ScrillaLib.TradingPlatforms.Newton
         public async Task<Dictionary<string, decimal>> GetBalancesAsync(string asset = null)
         {
             string path = $"{apiVersion}/balances";
-
+            
             var qParams = new Dictionary<string, string>();
             if (asset != null)
             {
                 qParams.Add("asset", asset);
             }
 
-            var balances = await SendApiMessageAsync(path, HttpMethod.Get, false, qParams);
+            var uri = BuildUri(baseUrl, path, qParams);
+
+            var balances = await SendApiMessageAsync(uri, HttpMethod.Get, false);
 
             return JsonSerializer.Deserialize<Dictionary<string, decimal>>(balances);
         }
@@ -206,9 +213,10 @@ namespace ScrillaLib.TradingPlatforms.Newton
         public async Task<bool> CancelOrderAsync()
         {
             string path = $"{apiVersion}/order/cancel";
+            var uri = BuildUri(baseUrl, path);
             try
             {
-                var canceled = await SendApiMessageAsync(path, HttpMethod.Post, false, null);
+                var canceled = await SendApiMessageAsync(uri, HttpMethod.Post, false);
                 return true;
             }
 
@@ -256,7 +264,9 @@ namespace ScrillaLib.TradingPlatforms.Newton
             if (symbol != null) qParams.Add("symbol", symbol);
             if (timeInForce != TimeInForce.Type.NONE) qParams.Add("time_in_force", timeInForce.ToString());
 
-            var orderHistory = await SendApiMessageAsync(path, HttpMethod.Get, false, qParams);
+            var uri = BuildUri(baseUrl, path, qParams);
+
+            var orderHistory = await SendApiMessageAsync(uri, HttpMethod.Get, false);
 
             //TODO: This needs to be deserialized when I know what the data looks like
             return orderHistory;
@@ -271,7 +281,8 @@ namespace ScrillaLib.TradingPlatforms.Newton
         {
             //TODO: The documentation here is not good, needs review
             string path = $"{apiVersion}/order/new";
-            var newOrder = await SendApiMessageAsync(path, HttpMethod.Post, false, null);
+            var uri = BuildUri(baseUrl, path);
+            var newOrder = await SendApiMessageAsync(uri, HttpMethod.Post, false);
 
         }
 
@@ -291,7 +302,9 @@ namespace ScrillaLib.TradingPlatforms.Newton
             if (symbol != null) qParams.Add("symbol", symbol);
             if (timeInForce != TimeInForce.Type.NONE) qParams.Add("time_in_force", timeInForce.ToString());
 
-            var openOrders = await SendApiMessageAsync(path, HttpMethod.Get, false, qParams);
+            var uri = BuildUri(baseUrl, path, qParams);
+
+            var openOrders = await SendApiMessageAsync(uri, HttpMethod.Get, false);
 
             //TODO: This needs to be deserialized when I know what the data looks like
             return openOrders;
@@ -303,19 +316,6 @@ namespace ScrillaLib.TradingPlatforms.Newton
 
 
         #region Helpers
-        private string AddQueryParamsToUrl(Dictionary<string, string> queryParams, string url)
-        {
-            var builder = new UriBuilder(url);
-            var query = HttpUtility.ParseQueryString(builder.Query);
-
-            foreach (var q in queryParams)
-            {
-                query[q.Key] = q.Value;
-            }
-            builder.Query = query.ToString();
-            return builder.ToString();
-        }
-
 
         /// <summary>
         /// Create the authorization header
@@ -327,13 +327,19 @@ namespace ScrillaLib.TradingPlatforms.Newton
         /// <param name="method"></param>
         /// <param name="body"></param>
         /// <returns></returns>
-        private string CreateAuthenticationToken(string path, string headerDate, string contentType = "", string method = "GET", string body = "")
+        protected override Dictionary<string, string> GetAuthHeaders(
+            Uri uri, 
+            string headerDate, 
+            string contentType = "", 
+            string method = "GET", 
+            string body = "",
+            string contentLength = "")
         {
             string[] signatureParams =
             {
                 method,    //Request Type
                 contentType,       //Content type Blank for GET, application/json for POST etc
-                path,   //URL path
+                uri.AbsolutePath,   //URL path
                 body,      //Body
                 headerDate
             };
@@ -342,35 +348,15 @@ namespace ScrillaLib.TradingPlatforms.Newton
 
             byte[] computedSignature = HashHMAC(StringEncode(SecretKey), StringEncode(signatureData));
 
-            return $"{ClientId}:{Convert.ToBase64String(computedSignature)}";
+            Dictionary<string, string> authHeaders = new Dictionary<string, string>();
+
+            authHeaders.Add("NewtonAPIAuth", $"{ClientId}:{Convert.ToBase64String(computedSignature)}");
+            authHeaders.Add("NewtonDate", headerDate);
+
+            return authHeaders;
         }
 
-
-        private byte[] HashHMAC(byte[] key, byte[] message)
-        {
-            var hash = new HMACSHA256(key);
-            return hash.ComputeHash(message);
-        }
-
-        private byte[] StringEncode(string text)
-        {
-            var encoding = new UTF8Encoding();
-            return encoding.GetBytes(text);
-        }
-
-        private long GetEpochTime(DateTime? suppliedTime = null)
-        {
-            TimeSpan t = new TimeSpan();
-            if (suppliedTime == null)
-            {
-                t = DateTime.UtcNow - new DateTime(1970, 1, 1);
-            }
-            else
-            {
-                t = (DateTime)suppliedTime - new DateTime(1970, 1, 1);
-            }
-            return (long)t.TotalSeconds;
-        }
+        
         #endregion
     }
 }
