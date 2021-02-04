@@ -51,7 +51,7 @@ namespace ScrillaLib.TradingPlatforms.BitBuy
             //json.put("content-length", body == null ? -1 : body.length());
 
 
-            byte[] computedSignature = HashHMAC(StringEncode(SecretKey), StringEncode(signatureData));
+            byte[] computedSignature = HashHMAC256(StringEncode(SecretKey), StringEncode(signatureData));
 
             Dictionary<string, string> authHeaders = new Dictionary<string, string>();
 

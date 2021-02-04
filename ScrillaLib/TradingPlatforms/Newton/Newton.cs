@@ -346,7 +346,7 @@ namespace ScrillaLib.TradingPlatforms.Newton
 
             string signatureData = string.Join(':', signatureParams);
 
-            byte[] computedSignature = HashHMAC(StringEncode(SecretKey), StringEncode(signatureData));
+            byte[] computedSignature = HashHMAC256(StringEncode(SecretKey), StringEncode(signatureData));
 
             Dictionary<string, string> authHeaders = new Dictionary<string, string>();
 
