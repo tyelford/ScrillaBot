@@ -1,4 +1,5 @@
-﻿using ScrillaLib.TradingPlatforms.Newton;
+﻿using ScrillaLib.TradingPlatforms.Binance;
+using ScrillaLib.TradingPlatforms.Newton;
 using System;
 using System.Threading.Tasks;
 
@@ -25,8 +26,8 @@ namespace TsetConsoleApp
         /// <returns></returns>
         private async Task TestApiCalls()
         {
-            Newton n = new Newton();
-            var f = await n.GetBalancesAsync();
+            Binance b = new Binance();
+            await b.GetWalletCoinsAsync();
 
             return;
         }

@@ -15,7 +15,8 @@ namespace ScrillaLib.TradingPlatforms
             Uri uri,
             HttpMethod method,
             bool isPublic = false,
-            string data = null)
+            string data = null,
+            bool useQueryParamForAuth = false)
         {
             try
             {
@@ -33,6 +34,22 @@ namespace ScrillaLib.TradingPlatforms
                             method == HttpMethod.Post ? "application/json" : "",
                             method.ToString().ToUpper(),
                             data != null ? data : "");
+
+
+                        if (useQueryParamForAuth)
+                        {
+                            //Some systems require the auth string as a query param
+                            UriBuilder builder = new UriBuilder(uri);
+                            var query = HttpUtility.ParseQueryString(builder.Query);
+                            foreach(var h in authHeaders)
+                            {
+                                if (h.Key == "X-MBX-APIKEY") continue;
+                                query[h.Key] = h.Value;
+                                authHeaders.Remove(h.Key);
+                            }
+                            builder.Query = query.ToString();
+                            uri = builder.Uri;
+                        }
 
                         //Add any auth headers
                         foreach (var h in authHeaders)
@@ -150,6 +167,16 @@ namespace ScrillaLib.TradingPlatforms
         {
             var encoding = new UTF8Encoding();
             return encoding.GetBytes(text);
+        }
+
+        /// <summary>
+        /// Convert byte array to Hash string
+        /// </summary>
+        /// <param name="hash"></param>
+        /// <returns></returns>
+        protected string HashEncode(byte[] hash)
+        {
+            return BitConverter.ToString(hash).Replace("-", "").ToLower();
         }
 
         /// <summary>
