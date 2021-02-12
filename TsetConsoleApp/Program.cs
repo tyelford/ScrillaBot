@@ -27,7 +27,7 @@ namespace TsetConsoleApp
         private async Task TestApiCalls()
         {
             Binance b = new Binance();
-            await b.GetWalletCoinsAsync();
+            var status = await b.GetWalletStatusAsync();
 
             return;
         }

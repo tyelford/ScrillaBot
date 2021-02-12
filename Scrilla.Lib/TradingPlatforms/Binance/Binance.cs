@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
+using Scrilla.Lib.Models.Binance.Wallet;
 
 namespace Scrilla.Lib.TradingPlatforms.Binance
 {
@@ -24,18 +26,18 @@ namespace Scrilla.Lib.TradingPlatforms.Binance
 
         #region Wallet Endpoints
 
-        public async Task GetWalletStatusAsync()
+        public async Task<SystemStatus> GetWalletStatusAsync()
         {
             string path = "/wapi/v3/systemStatus.html";
             var uri = BuildUri(baseUrl, path);
             try
             {
                 var status = await SendApiMessageAsync(uri, HttpMethod.Get, false, useQueryParamForAuth:true);
-                return;
+                return JsonSerializer.Deserialize<SystemStatus>(status, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
             }
-            catch(Exception)
+            catch(Exception err)
             {
-                return;
+                throw new Exception(err.Message);
             }
         }
 
