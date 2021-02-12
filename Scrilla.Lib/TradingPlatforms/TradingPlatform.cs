@@ -6,11 +6,18 @@ using System.Threading.Tasks;
 using System.Linq;
 using System.Web;
 using System.Security.Cryptography;
+using System.Text.Json;
 
 namespace Scrilla.Lib.TradingPlatforms
 {
     public abstract class TradingPlatform
     {
+
+        protected JsonSerializerOptions jso = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        };
+
         public async Task<string> SendApiMessageAsync(
             Uri uri,
             HttpMethod method,

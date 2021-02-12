@@ -19,6 +19,7 @@ namespace Scrilla.Lib.TradingPlatforms.Binance
 
         private readonly string baseUrl = "https://api.binance.com";
 
+
         public Binance()
         {
 
@@ -33,7 +34,7 @@ namespace Scrilla.Lib.TradingPlatforms.Binance
             try
             {
                 var status = await SendApiMessageAsync(uri, HttpMethod.Get, false, useQueryParamForAuth:true);
-                return JsonSerializer.Deserialize<SystemStatus>(status, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                return JsonSerializer.Deserialize<SystemStatus>(status, jso);
             }
             catch(Exception err)
             {
