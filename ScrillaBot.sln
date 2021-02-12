@@ -5,7 +5,9 @@ VisualStudioVersion = 16.0.30804.86
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScrillaLib", "ScrillaLib\ScrillaLib.csproj", "{8B56B4F8-10A8-46AB-A3C1-BF2E37D42405}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestConsoleApp", "TsetConsoleApp\TestConsoleApp.csproj", "{CCE0DC62-08ED-4001-B724-A0C0FA1499E9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestConsoleApp", "TsetConsoleApp\TestConsoleApp.csproj", "{CCE0DC62-08ED-4001-B724-A0C0FA1499E9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scrilla.Lib", "Scrilla.Lib\Scrilla.Lib.csproj", "{2A09221D-4D13-4D9D-B798-271A0131CF8E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{CCE0DC62-08ED-4001-B724-A0C0FA1499E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CCE0DC62-08ED-4001-B724-A0C0FA1499E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CCE0DC62-08ED-4001-B724-A0C0FA1499E9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2A09221D-4D13-4D9D-B798-271A0131CF8E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2A09221D-4D13-4D9D-B798-271A0131CF8E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2A09221D-4D13-4D9D-B798-271A0131CF8E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2A09221D-4D13-4D9D-B798-271A0131CF8E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
