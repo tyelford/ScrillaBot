@@ -1,5 +1,5 @@
-﻿using ScrillaLib.TradingPlatforms.Binance;
-using ScrillaLib.TradingPlatforms.Newton;
+﻿using Scrilla.Lib.TradingPlatforms.Binance;
+using Scrilla.Lib.TradingPlatforms.Newton;
 using System;
 using System.Threading.Tasks;
 
