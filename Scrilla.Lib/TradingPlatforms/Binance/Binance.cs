@@ -34,7 +34,7 @@ namespace Scrilla.Lib.TradingPlatforms.Binance
             try
             {
                 var status = await SendApiMessageAsync(uri, HttpMethod.Get, false, useQueryParamForAuth:true);
-                return JsonSerializer.Deserialize<SystemStatus>(status, jso);
+                return JsonSerializer.Deserialize<SystemStatus>(status, JsonOps);
             }
             catch(Exception err)
             {

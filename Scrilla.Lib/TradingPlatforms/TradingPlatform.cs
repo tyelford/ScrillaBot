@@ -13,7 +13,7 @@ namespace Scrilla.Lib.TradingPlatforms
     public abstract class TradingPlatform
     {
 
-        protected JsonSerializerOptions jso = new JsonSerializerOptions
+        protected JsonSerializerOptions JsonOps = new JsonSerializerOptions
         {
             PropertyNameCaseInsensitive = true
         };
