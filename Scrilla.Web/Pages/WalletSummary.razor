@@ -1,0 +1,34 @@
+﻿@page "/wallet"
+
+@using Scrilla.Web.Data
+@inject WalletService walletService
+
+
+<h3>WalletSummary</h3>
+
+
+<table class="table">
+    <tr>
+        <th>Exchange Name</th>
+        <th>Coin Name</th>
+        <th>Amount</th>
+    </tr>
+        @foreach(var w in wallets)
+        {
+            <tr>
+                <td>@w.ExchangeName</td>
+                <td>@w.CoinName</td>
+                <td>@w.Amount</td>
+            </tr>
+        }
+
+</table>
+
+@code {
+    private List<Wallet> wallets;
+
+    protected override async Task OnInitializedAsync()
+    {
+        wallets = await walletService.GetAllWalletsAsync();
+    }
+}
