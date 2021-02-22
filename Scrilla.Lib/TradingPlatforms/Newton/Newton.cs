@@ -251,12 +251,12 @@ namespace Scrilla.Lib.TradingPlatforms.Newton
 
             if (startDate != null)
             {
-                var startEpoch = GetEpochTime(startDate);
+                var startEpoch = GetEpochTimeSeconds(startDate);
                 qParams.Add("start_date", startEpoch.ToString());
             }
             if (endDate != null)
             {
-                var endEpoch = GetEpochTime(endDate);
+                var endEpoch = GetEpochTimeSeconds(endDate);
                 qParams.Add("end_date", endEpoch.ToString());
             }
             if (limit != null) qParams.Add("limit", limit.ToString());

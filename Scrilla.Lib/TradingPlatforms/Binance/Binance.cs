@@ -48,15 +48,8 @@ namespace Scrilla.Lib.TradingPlatforms.Binance
             string path = "/sapi/v1/capital/config/getall";
 
             var qParams = new Dictionary<string, string>();
-            //qParams.Add("symbol", "LTCBTC");
-            //qParams.Add("side", "BUY");
-            //qParams.Add("type", "LIMIT");
-            //qParams.Add("timeInForce", "GTC");
-            //qParams.Add("quantity", "1");
-            //qParams.Add("price", "0.1");
-            //qParams.Add("timestamp", "1499827319559");
             qParams.Add("recvWindow", "5000");
-            qParams.Add("timestamp", GetEpochTime().ToString());
+            qParams.Add("timestamp", GetEpochTimeMilliseconds().ToString());
 
             var uri = BuildUri(baseUrl, path, qParams);
 
@@ -67,6 +60,37 @@ namespace Scrilla.Lib.TradingPlatforms.Binance
 
         #endregion
 
+
+        #region Order Endpoints
+
+        public async Task<string> GetOpenOrdersAsync()
+        {
+            string path = "/api/v3/openOrders";
+
+            var qParams = new Dictionary<string, string>();
+            qParams.Add("timestamp", GetEpochTimeMilliseconds().ToString());
+            var uri = BuildUri(baseUrl, path, qParams);
+            string res = null;
+            try
+            {
+
+                res = await SendApiMessageAsync(uri, HttpMethod.Get, false, useQueryParamForAuth:true);
+                return res;
+            }
+            catch(Exception err)
+            {
+                throw new Exception(err.Message);
+            }
+        }
+
+
+        private string GenTimeStamp(DateTime baseDateTime)
+        {
+            var dtOffset = new DateTimeOffset(baseDateTime);
+            return dtOffset.ToUnixTimeMilliseconds().ToString();
+        }
+
+        #endregion
 
 
         protected override Dictionary<string, string> GetAuthHeaders(
@@ -92,5 +116,8 @@ namespace Scrilla.Lib.TradingPlatforms.Binance
 
             return authHeaders;
         }
+
+
+        
     }
 }
