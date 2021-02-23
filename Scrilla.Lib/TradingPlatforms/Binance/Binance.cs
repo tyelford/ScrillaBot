@@ -33,7 +33,7 @@ namespace Scrilla.Lib.TradingPlatforms.Binance
             var uri = BuildUri(baseUrl, path);
             try
             {
-                var status = await SendApiMessageAsync(uri, HttpMethod.Get, false, useQueryParamForAuth:true);
+                var status = await SendApiMessageAsync(uri, HttpMethod.Get, false);
                 return JsonSerializer.Deserialize<SystemStatus>(status, JsonOps);
             }
             catch(Exception err)
@@ -43,30 +43,56 @@ namespace Scrilla.Lib.TradingPlatforms.Binance
         }
 
 
-        public async Task<string> GetWalletCoinsAsync()
+        public async Task<string> GetWalletCoinsAsync(long? recvWindow = null)
         {
             string path = "/sapi/v1/capital/config/getall";
 
             var qParams = new Dictionary<string, string>();
-            //qParams.Add("symbol", "LTCBTC");
-            //qParams.Add("side", "BUY");
-            //qParams.Add("type", "LIMIT");
-            //qParams.Add("timeInForce", "GTC");
-            //qParams.Add("quantity", "1");
-            //qParams.Add("price", "0.1");
-            //qParams.Add("timestamp", "1499827319559");
-            qParams.Add("recvWindow", "5000");
-            qParams.Add("timestamp", GetEpochTime().ToString());
+
+            if(recvWindow != null) qParams.Add("recvWindow", recvWindow.ToString());
+
+            qParams.Add("timestamp", GetEpochTimeMilliseconds().ToString());
 
             var uri = BuildUri(baseUrl, path, qParams);
 
-            var coins = await SendApiMessageAsync(uri, HttpMethod.Get, false, useQueryParamForAuth: true);
+            var coins = await SendApiMessageAsync(uri, HttpMethod.Get, false);
 
             return coins;
         }
 
         #endregion
 
+
+        #region Order Endpoints
+
+        public async Task<string> GetOpenOrdersAsync()
+        {
+            string path = "/api/v3/openOrders";
+
+            var qParams = new Dictionary<string, string>();
+            qParams.Add("timestamp", GetEpochTimeMilliseconds().ToString());
+            var uri = BuildUri(baseUrl, path, qParams);
+            string res = null;
+            try
+            {
+
+                res = await SendApiMessageAsync(uri, HttpMethod.Get, false);
+                return res;
+            }
+            catch(Exception err)
+            {
+                throw new Exception(err.Message);
+            }
+        }
+
+
+        private string GenTimeStamp(DateTime baseDateTime)
+        {
+            var dtOffset = new DateTimeOffset(baseDateTime);
+            return dtOffset.ToUnixTimeMilliseconds().ToString();
+        }
+
+        #endregion
 
 
         protected override Dictionary<string, string> GetAuthHeaders(
@@ -92,5 +118,26 @@ namespace Scrilla.Lib.TradingPlatforms.Binance
 
             return authHeaders;
         }
+
+
+        /// <summary>
+        /// Wrapper for the super classes SendApiMessage
+        /// </summary>
+        /// <param name="uri"></param>
+        /// <param name="method"></param>
+        /// <param name="isPublic"></param>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        private async Task<string> SendApiMessageAsync(
+            Uri uri,
+            HttpMethod method,
+            bool isPublic = false,
+            string data = null)
+        {
+            return await base.SendApiMessageAsync(uri, method, isPublic, data, useQueryParamForAuth: true);
+        }
+
+
+
     }
 }

@@ -26,5 +26,18 @@ namespace Scrilla.Lib.TradingPlatforms.Binance.Tests
             Assert.AreEqual(res.GetType(), t);
             Assert.IsNotNull(res.Msg);
         }
+
+        [TestMethod()]
+        public async Task GetWalletCoinsAsyncTest()
+        {
+            //Arrange
+            var b = new Binance();
+
+            //Act
+            var res = await b.GetWalletCoinsAsync();
+
+            //Assert
+            Assert.IsNotNull(res);
+        }
     }
 }

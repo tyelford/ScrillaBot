@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scrilla.Lib", "Scrilla.Lib\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scrilla.Lib.Tests", "Scrilla.Lib.Tests\Scrilla.Lib.Tests.csproj", "{52C6FD3E-AE25-4E67-B5AA-F098775729A3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scrilla.Web", "Scrilla.Web\Scrilla.Web.csproj", "{4451ED36-EDFA-441B-B721-92C3F655916E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{52C6FD3E-AE25-4E67-B5AA-F098775729A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{52C6FD3E-AE25-4E67-B5AA-F098775729A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{52C6FD3E-AE25-4E67-B5AA-F098775729A3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4451ED36-EDFA-441B-B721-92C3F655916E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4451ED36-EDFA-441B-B721-92C3F655916E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4451ED36-EDFA-441B-B721-92C3F655916E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4451ED36-EDFA-441B-B721-92C3F655916E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -30,11 +30,12 @@ namespace Scrilla.Lib.TradingPlatforms
                 using (HttpClient client = new HttpClient())
                 {
                     //Create headers
-                    client.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0");
+                    //client.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0");
+                    client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
                     if (!isPublic)
                     {
                         //Auth header for private apis
-                        string requestEpochTime = GetEpochTime().ToString();
+                        string requestEpochTime = GetEpochTimeSeconds().ToString();
                         Dictionary<string, string> authHeaders = GetAuthHeaders(
                             uri,
                             requestEpochTime,
@@ -120,7 +121,7 @@ namespace Scrilla.Lib.TradingPlatforms
 
 
 
-        protected long GetEpochTime(DateTime? suppliedTime = null)
+        protected long GetEpochTimeSeconds(DateTime? suppliedTime = null)
         {
             TimeSpan t = new TimeSpan();
             if (suppliedTime == null)
@@ -132,6 +133,20 @@ namespace Scrilla.Lib.TradingPlatforms
                 t = (DateTime)suppliedTime - new DateTime(1970, 1, 1);
             }
             return (long)t.TotalSeconds;
+        }
+
+        protected long GetEpochTimeMilliseconds(DateTime? suppliedTime = null)
+        {
+            TimeSpan t = new TimeSpan();
+            if (suppliedTime == null)
+            {
+                t = DateTime.UtcNow - new DateTime(1970, 1, 1);
+            }
+            else
+            {
+                t = (DateTime)suppliedTime - new DateTime(1970, 1, 1);
+            }
+            return (long)t.TotalMilliseconds;
         }
 
         /// <summary>
@@ -183,7 +198,7 @@ namespace Scrilla.Lib.TradingPlatforms
         /// <returns></returns>
         protected string HashEncode(byte[] hash)
         {
-            return BitConverter.ToString(hash).Replace("-", "").ToLower();
+            return BitConverter.ToString(hash).Replace("-", "");
         }
 
         /// <summary>
