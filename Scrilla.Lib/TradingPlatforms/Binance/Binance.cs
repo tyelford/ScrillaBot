@@ -25,11 +25,11 @@ namespace Scrilla.Lib.TradingPlatforms.Binance
 
         }
 
-        #region Wallet Endpoints
 
-        public async Task<SystemStatus> GetWalletStatusAsync()
+        #region System Endpoints
+        public async Task<SystemStatus> GetSystemStatusAsync()
         {
-            string path = "/wapi/v3/systemStatus.html";
+            string path = BinanceEndpoints.GetSystemStatus;
             var uri = BuildUri(baseUrl, path);
             try
             {
@@ -42,10 +42,13 @@ namespace Scrilla.Lib.TradingPlatforms.Binance
             }
         }
 
+        #endregion
+
+        #region Wallet Endpoints
 
         public async Task<string> GetWalletCoinsAsync(long? recvWindow = null)
         {
-            string path = "/sapi/v1/capital/config/getall";
+            string path = BinanceEndpoints.GetWalletCoins;
 
             var qParams = new Dictionary<string, string>();
 
@@ -65,17 +68,20 @@ namespace Scrilla.Lib.TradingPlatforms.Binance
 
         #region Order Endpoints
 
-        public async Task<string> GetOpenOrdersAsync()
+        public async Task<string> GetOpenOrdersAsync(string symbol = null, long? recvWindow = null)
         {
-            string path = "/api/v3/openOrders";
+            string path = BinanceEndpoints.GetOpenOrders;
 
             var qParams = new Dictionary<string, string>();
+
+            if (symbol != null) qParams.Add("symbol", symbol);
+            if (recvWindow != null) qParams.Add("recvWindow", recvWindow.ToString());
+
             qParams.Add("timestamp", GetEpochTimeMilliseconds().ToString());
             var uri = BuildUri(baseUrl, path, qParams);
             string res = null;
             try
             {
-
                 res = await SendApiMessageAsync(uri, HttpMethod.Get, false);
                 return res;
             }
@@ -86,14 +92,10 @@ namespace Scrilla.Lib.TradingPlatforms.Binance
         }
 
 
-        private string GenTimeStamp(DateTime baseDateTime)
-        {
-            var dtOffset = new DateTimeOffset(baseDateTime);
-            return dtOffset.ToUnixTimeMilliseconds().ToString();
-        }
-
         #endregion
 
+
+        #region Helpers
 
         protected override Dictionary<string, string> GetAuthHeaders(
             Uri uri,
@@ -137,7 +139,7 @@ namespace Scrilla.Lib.TradingPlatforms.Binance
             return await base.SendApiMessageAsync(uri, method, isPublic, data, useQueryParamForAuth: true);
         }
 
-
+        #endregion
 
     }
 }

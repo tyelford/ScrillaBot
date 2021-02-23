@@ -13,14 +13,14 @@ namespace Scrilla.Lib.TradingPlatforms.Binance.Tests
     public class BinanceTests
     {
         [TestMethod()]
-        public async Task GetWalletStatusAsyncTest()
+        public async Task GetSystemStatusAsyncTest()
         {
             //Arrange
             Type t = typeof(SystemStatus);
 
             //Act
             var b = new Binance();
-            var res = await b.GetWalletStatusAsync();
+            var res = await b.GetSystemStatusAsync();
 
             //Assert
             Assert.AreEqual(res.GetType(), t);
