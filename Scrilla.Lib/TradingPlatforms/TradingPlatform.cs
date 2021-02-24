@@ -30,7 +30,7 @@ namespace Scrilla.Lib.TradingPlatforms
                 using (HttpClient client = new HttpClient())
                 {
                     //Create headers
-                    //client.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0");
+                    client.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0");
                     client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
                     if (!isPublic)
                     {

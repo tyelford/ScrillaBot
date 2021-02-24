@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Scrilla.Lib.Models.Binance.Wallet
+namespace Scrilla.Lib.Models.Binance
 {
     public class SystemStatus
     {

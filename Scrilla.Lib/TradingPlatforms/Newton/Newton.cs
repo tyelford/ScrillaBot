@@ -22,103 +22,6 @@ namespace Scrilla.Lib.TradingPlatforms.Newton
 
         private string baseUrl = "https://api.newton.co";
 
-        /// <summary>
-        /// Creates and sends a API message to the Newton provider
-        /// Returns a Json string
-        /// </summary>
-        /// <param name="path"></param>
-        /// <param name="isPublic"></param>
-        /// <param name="queryParams"></param>
-        /// <returns></returns>
-        //private async Task<string> SendApiMessageAsync(
-        //    string path, 
-        //    HttpMethod method, 
-        //    bool isPublic, 
-        //    Dictionary<string, string> queryParams,
-        //    string data = null)
-        //{
-        //    string url = baseUrl + path;
-        //    try
-        //    {
-        //        using (HttpClient client = new HttpClient())
-        //        {
-        //            //Create headers
-        //            client.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0");
-        //            if (!isPublic)
-        //            {
-        //                //Auth header for private apis
-        //                string requestEpochTime = GetEpochTime().ToString();
-        //                string NewtonApiAuth = CreateAuthenticationToken(
-        //                    path,
-        //                    requestEpochTime,
-        //                    method == HttpMethod.Post ? "application/json" : "",
-        //                    method.ToString().ToUpper(),
-        //                    data != null ? data : "");
-
-        //                client.DefaultRequestHeaders.Add("NewtonAPIAuth", NewtonApiAuth);
-        //                client.DefaultRequestHeaders.Add("NewtonDate", requestEpochTime);
-
-        //            }
-
-        //            if (queryParams != null && queryParams.Count > 0)
-        //            {
-        //                //Assign query paramter to url
-        //                url = AddQueryParamsToUrl(queryParams, url);
-        //            }
-
-        //            //Create a get message
-        //            if(method == HttpMethod.Get)
-        //            {
-        //                var res = await client.GetAsync(url);
-        //                if (res.IsSuccessStatusCode)
-        //                {
-        //                    return await res.Content.ReadAsStringAsync();
-        //                }
-        //                else
-        //                {
-        //                    //This probably isn't the best way to handle a non-sucessful status
-        //                    //code but it'll do for now
-        //                    throw new Exception($"API returned: {res.StatusCode.ToString()}");
-        //                }
-        //            }
-
-        //            //Create a post message
-        //            else if(method == HttpMethod.Post)
-        //            {
-        //                HttpContent content = null;
-        //                if(data != null)
-        //                {
-        //                    content = new StringContent(data, Encoding.UTF8, "application/json");
-        //                }
-        //                var res = await client.PostAsync(url, content);
-
-        //                if (res.IsSuccessStatusCode)
-        //                {
-        //                    return await res.Content.ReadAsStringAsync();
-        //                }
-        //                else
-        //                {
-        //                    //This probably isn't the best way to handle a non-sucessful status
-        //                    //code but it'll do for now
-        //                    throw new Exception($"API returned: {res.StatusCode.ToString()}");
-        //                }
-        //            }
-
-        //            //Catch all
-        //            else
-        //            {
-        //                throw new Exception($"Method not implemented in this library - method: {method}");
-        //            }
-
-        //        }
-        //    }
-        //    catch (Exception err)
-        //    {
-        //        throw new Exception($"Problem creating and sending message to API {url} - {err.Message}");
-        //    }
-        //}
-
-
         #region PublicEndpoints
 
         public async Task<Fees> GetFeesAsync()
@@ -187,7 +90,7 @@ namespace Scrilla.Lib.TradingPlatforms.Newton
         /// Get account balances
         /// </summary>
         /// <returns>Dictionary<string,decimal>/returns>
-        public async Task<Dictionary<string, decimal>> GetBalancesAsync(string asset = null)
+        public async Task<Dictionary<string, double>> GetBalancesAsync(string asset = null)
         {
             string path = $"{apiVersion}/balances";
             
@@ -201,7 +104,7 @@ namespace Scrilla.Lib.TradingPlatforms.Newton
 
             var balances = await SendApiMessageAsync(uri, HttpMethod.Get, false);
 
-            return JsonSerializer.Deserialize<Dictionary<string, decimal>>(balances);
+            return JsonSerializer.Deserialize<Dictionary<string, double>>(balances);
         }
 
 

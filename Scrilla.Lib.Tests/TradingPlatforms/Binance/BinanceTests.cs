@@ -1,5 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Scrilla.Lib.Models.Binance.Wallet;
+using Scrilla.Lib.Models.Binance;
 using Scrilla.Lib.TradingPlatforms.Binance;
 using System;
 using System.Collections.Generic;

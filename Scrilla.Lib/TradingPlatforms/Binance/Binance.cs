@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Scrilla.Lib.Models.Binance.Wallet;
+using Newtonsoft.Json;
+using Scrilla.Lib.Models.Binance;
 
 namespace Scrilla.Lib.TradingPlatforms.Binance
 {
@@ -34,7 +36,7 @@ namespace Scrilla.Lib.TradingPlatforms.Binance
             try
             {
                 var status = await SendApiMessageAsync(uri, HttpMethod.Get, false);
-                return JsonSerializer.Deserialize<SystemStatus>(status, JsonOps);
+                return JsonConvert.DeserializeObject<SystemStatus>(status);
             }
             catch(Exception err)
             {
@@ -46,7 +48,7 @@ namespace Scrilla.Lib.TradingPlatforms.Binance
 
         #region Wallet Endpoints
 
-        public async Task<string> GetWalletCoinsAsync(long? recvWindow = null)
+        public async Task<List<Wallet>> GetWalletCoinsAsync(long? recvWindow = null)
         {
             string path = BinanceEndpoints.GetWalletCoins;
 
@@ -59,8 +61,9 @@ namespace Scrilla.Lib.TradingPlatforms.Binance
             var uri = BuildUri(baseUrl, path, qParams);
 
             var coins = await SendApiMessageAsync(uri, HttpMethod.Get, false);
+            var deseralized = JsonConvert.DeserializeObject<List<Wallet>>(coins);
 
-            return coins;
+            return deseralized.Where(x => x.Free > 0).ToList();
         }
 
         #endregion
