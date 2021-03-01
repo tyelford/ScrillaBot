@@ -16,8 +16,8 @@ namespace Scrilla.Lib.TradingPlatforms.Binance
 
     public class Binance: TradingPlatform
     {
-        private readonly string ApiKey = "";
-        private readonly string SecretKey = "";
+        private readonly string ApiKey;
+        private readonly string SecretKey;
 
         private readonly string baseUrl = "https://api.binance.com";
 
@@ -25,6 +25,12 @@ namespace Scrilla.Lib.TradingPlatforms.Binance
         public Binance()
         {
 
+        }
+
+        public Binance(string ApiKey, string SecretKey)
+        {
+            this.ApiKey = ApiKey;
+            this.SecretKey = SecretKey;
         }
 
 

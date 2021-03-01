@@ -1,4 +1,5 @@
-﻿using Scrilla.Lib.TradingPlatforms.Binance;
+﻿using Microsoft.Extensions.Configuration;
+using Scrilla.Lib.TradingPlatforms.Binance;
 using Scrilla.Lib.TradingPlatforms.Newton;
 using System;
 using System.Collections.Generic;
@@ -10,15 +11,23 @@ namespace Scrilla.Web.Data
     public class WalletService
     {
 
+        public IConfiguration _config;
+
+        public WalletService(IConfiguration config)
+        {
+            _config = config;
+        }
+
+
         public async Task<List<Wallet>> GetAllWalletsAsync()
         {
 
             //Get data from Binace Wallet
-            Binance b = new Binance();
+            Binance b = new Binance(_config["Binance:ApiKey"], _config["Binance:SecretKey"]);
             var bWallet = await b.GetWalletCoinsAsync();
 
             //Get data from Netwon Wallet
-            Newton n = new Newton();
+            Newton n = new Newton(_config["Newton:ClientId"], _config["Newton:SecretKey"]);
             var nWallet = await n.GetBalancesAsync();
 
             //Do something to get all wallets from all exchanges here

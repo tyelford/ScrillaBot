@@ -15,12 +15,22 @@ namespace Scrilla.Lib.TradingPlatforms.Newton
     public class Newton : TradingPlatform
     {
 
-        private readonly string ClientId = "";
-        private readonly string SecretKey = "";
+        private readonly string ClientId;
+        private readonly string SecretKey;
 
         private readonly string apiVersion = "/v1";  //Needs the leading slash here to make the auth work correctly
 
         private string baseUrl = "https://api.newton.co";
+
+
+        public Newton() { }
+
+        public Newton(string ClientId, string SecretKey)
+        {
+            this.ClientId = ClientId;
+            this.SecretKey = SecretKey;
+        }
+
 
         #region PublicEndpoints
 
