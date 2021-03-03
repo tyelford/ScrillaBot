@@ -87,6 +87,7 @@ namespace Scrilla.Lib.TradingPlatforms.Binance
             if (recvWindow != null) qParams.Add("recvWindow", recvWindow.ToString());
 
             qParams.Add("timestamp", GetEpochTimeMilliseconds().ToString());
+
             var uri = BuildUri(baseUrl, path, qParams);
             string res = null;
             try
