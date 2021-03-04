@@ -1,6 +1,11 @@
 ﻿@page "/"
 
 @using Scrilla.Web.Data
+@using ChartJs.Blazor.PieChart
+@using ChartJs.Blazor.Util
+@using ChartJs.Blazor.Common
+
+
 @inject WalletService walletService
 
 <h1>Wallet Overview</h1>
@@ -11,7 +16,20 @@
 }
 else
 {
-
+    @*@for (int i = 0; i < wallets.Count; i++)
+    {
+        <div class="col-sm-6">
+            <Chart Config="pieCharts[i]"></Chart>
+        </div>
+    }*@
+<div class="row">
+    @foreach (var p in pieCharts)
+    {
+        <div class="col-sm-4">
+            <Chart Config="p.Value"></Chart>
+        </div>
+    }
+</div>
     <table class="table">
         <tr>
             <th>Exchange Name</th>
@@ -35,28 +53,103 @@ else
 
 @code {
 
+    //private List<PieConfig> pieCharts;
+    private Dictionary<string, PieConfig> pieCharts;
+
     private System.Threading.Timer timer;
 
     private List<Wallet> wallets;
     protected override void OnInitialized()
     {
+
+        pieCharts = new Dictionary<string, PieConfig>();
+
         timer = new System.Threading.Timer(async _ =>
         {
             await GetWallets();
+            CreatePieCharts();
             await InvokeAsync(StateHasChanged);
         }, null, 0, 2000);
-        //await Task.Delay(5000);
-        ////wallets = await walletService.GetAllWalletsAsync();
-        //while (true)
-        //{
-        //    await GetWallets();
-        //    await Task.Delay(2000);
-        //    StateHasChanged();
-        //}
     }
 
     private async Task GetWallets()
     {
         wallets = await walletService.GetAllWalletsAsync();
+    }
+
+    private bool chartsCreated = false;
+    private void CreatePieCharts()
+    {
+        if (chartsCreated)
+            return;
+
+        foreach (var w in wallets)
+        {
+            var pc = new PieConfig()
+            {
+                Options = new PieOptions
+                {
+                    Responsive = true,
+                    Title = new OptionsTitle
+                    {
+                        Display = true,
+                        Text = $"{w.ExchangeName} Wallets"
+                    }
+                }
+            };
+
+            var theseCoins = wallets.Where(x => x.ExchangeName == w.ExchangeName).ToList();
+
+            foreach (var c in theseCoins)
+            {
+                pc.Data.Labels.Add(c.CoinName);
+            }
+            var pieDs = new PieDataset<double>();
+            theseCoins.ForEach(x => pieDs.Add(x.Amount));
+
+            pc.Data.Datasets.Add(pieDs);
+
+            if (pieCharts.ContainsKey(w.ExchangeName))
+            {
+                pieCharts[w.ExchangeName] = pc;
+            }
+            else
+            {
+                pieCharts.Add(w.ExchangeName, pc);
+            }
+            chartsCreated = true;
+        }
+
+
+        //_config = new PieConfig
+        //{
+        //    Options = new PieOptions
+        //    {
+        //        Responsive = true,
+        //        Title = new OptionsTitle
+        //        {
+        //            Display = true,
+        //            Text = "ChartJs.Blazor Pie Chart"
+        //        }
+        //    }
+        //};
+
+        //foreach (string color in new[] { "Red", "Yellow", "Green", "Blue" })
+        //{
+        //    _config.Data.Labels.Add(color);
+        //}
+
+        //PieDataset<int> dataset = new PieDataset<int>(new[] { 6, 5, 3, 7 })
+        //{
+        //    BackgroundColor = new[]
+        //    {
+        //    ColorUtil.ColorHexString(255, 99, 132), // Slice 1 aka "Red"
+        //    ColorUtil.ColorHexString(255, 205, 86), // Slice 2 aka "Yellow"
+        //    ColorUtil.ColorHexString(75, 192, 192), // Slice 3 aka "Green"
+        //    ColorUtil.ColorHexString(54, 162, 235), // Slice 4 aka "Blue"
+        //}
+        //};
+
+        //_config.Data.Datasets.Add(dataset);
     }
 }
