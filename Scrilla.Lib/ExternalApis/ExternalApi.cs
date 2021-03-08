@@ -147,7 +147,7 @@ namespace Scrilla.Lib.ExternalApis
         /// <param name="path"></param>
         /// <param name="queryParams"></param>
         /// <returns></returns>
-        protected Uri BuildUri(string url, string path, Dictionary<string, string> queryParams = null)
+        protected Uri BuildUri(string url, string path, Dictionary<string, string> queryParams = null, bool deEncodeCommas = false)
         {
             UriBuilder builder = new UriBuilder(url);
             builder.Path = path;
@@ -160,6 +160,10 @@ namespace Scrilla.Lib.ExternalApis
                     query[q.Key] = q.Value;
                 }
                 builder.Query = query.ToString();
+                //if (deEncodeCommas)
+                //{
+                //    builder.Query = builder.Query.Replace("%2c", ",");
+                //}
             }
             return builder.Uri;
         }

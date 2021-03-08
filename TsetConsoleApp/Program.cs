@@ -34,8 +34,9 @@ namespace TsetConsoleApp
             //var s = await n.GetBalancesAsync();
 
             CryptoCompare c = new CryptoCompare("");
-            var f = new string[] { "CAD" };
-            var s = await c.SingleSymbolPrice("XMR", f);
+            var b = new string[] { "BTC", "XMR", "SFP", "ADA" };
+            var f = new string[] { "CAD", "USD" };
+            var s = await c.MultiSymbolPrice(b, f);
             return;
         }
     }

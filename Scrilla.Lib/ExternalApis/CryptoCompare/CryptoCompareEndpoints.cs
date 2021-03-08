@@ -10,6 +10,7 @@ namespace Scrilla.Lib.ExternalApis.CryptoCompare
     {
 
         public static string SingleSymbolPrice => "/data/price";
+        public static string MultiSymbolPrice => "/data/pricemulti";
 
     }
 }

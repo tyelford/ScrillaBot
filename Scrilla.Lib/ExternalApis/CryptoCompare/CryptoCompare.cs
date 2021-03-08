@@ -46,6 +46,32 @@ namespace Scrilla.Lib.ExternalApis.CryptoCompare
         }
 
 
+        public async Task<string> MultiSymbolPrice(
+            string[] cryptoSymbol,
+            string[] fiatSymbols,
+            bool tryConvert = true,
+            bool relaxedValidation = true
+            )
+        {
+            string path = CryptoCompareEndpoints.MultiSymbolPrice;
+
+            var cryptoSumbolsCsv = string.Join(",", cryptoSymbol);
+            var fiatSymbolsCsv = string.Join(",", fiatSymbols);
+
+            var qParams = new Dictionary<string, string>();
+            if (cryptoSymbol != null) qParams.Add("fsyms", cryptoSumbolsCsv);
+            if (!string.IsNullOrEmpty(fiatSymbolsCsv)) qParams.Add("tsyms", fiatSymbolsCsv);
+
+            qParams.Add("tryConvert", tryConvert.ToString().ToLower());
+            qParams.Add("relaxedValidation", relaxedValidation.ToString().ToLower());
+
+            var uri = BuildUri(baseUrl, path, qParams);
+
+            var res = await SendApiMessageAsync(uri, HttpMethod.Get, false);
+            return res;
+        }
+
+
         protected override Dictionary<string, string> GetAuthHeaders(
             Uri uri,
             string headerDate,
