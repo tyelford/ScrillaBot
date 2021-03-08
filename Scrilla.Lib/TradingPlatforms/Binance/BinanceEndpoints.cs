@@ -11,7 +11,6 @@ namespace Scrilla.Lib.TradingPlatforms.Binance
 
         public static string GetSystemStatus = "/wapi/v3/systemStatus.html";
 
-
         public static string GetOpenOrders = "/api/v3/openOrders";
         public static string GetWalletCoins = "/sapi/v1/capital/config/getall";
 

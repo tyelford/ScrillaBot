@@ -1,4 +1,5 @@
-﻿using Scrilla.Lib.TradingPlatforms.Binance;
+﻿using Scrilla.Lib.ExternalApis.CryptoCompare;
+using Scrilla.Lib.TradingPlatforms.Binance;
 using Scrilla.Lib.TradingPlatforms.Newton;
 using System;
 using System.Threading.Tasks;
@@ -26,12 +27,15 @@ namespace TsetConsoleApp
         /// <returns></returns>
         private async Task TestApiCalls()
         {
-            Binance b = new Binance();
-            var status = await b.GetWalletCoinsAsync();
+            //Binance b = new Binance();
+            //var status = await b.GetWalletCoinsAsync();
 
             //Newton n = new Newton();
             //var s = await n.GetBalancesAsync();
 
+            CryptoCompare c = new CryptoCompare("");
+            var f = new string[] { "CAD" };
+            var s = await c.SingleSymbolPrice("XMR", f);
             return;
         }
     }
