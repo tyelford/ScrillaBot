@@ -1,6 +1,7 @@
 ﻿@page "/"
 
 @using Scrilla.Web.Data
+@using Scrilla.Lib.Models.ViewModels
 @using ChartJs.Blazor.PieChart
 @using ChartJs.Blazor.Util
 @using ChartJs.Blazor.Common
@@ -58,7 +59,7 @@ else
 
     private System.Threading.Timer timer;
 
-    private List<Wallet> wallets;
+    private List<WalletView> wallets;
     protected override void OnInitialized()
     {
 

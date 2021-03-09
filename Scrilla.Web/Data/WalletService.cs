@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Scrilla.Lib.Models.ViewModels;
 using Scrilla.Lib.TradingPlatforms.Binance;
 using Scrilla.Lib.TradingPlatforms.Newton;
 using System;
@@ -19,7 +20,7 @@ namespace Scrilla.Web.Data
         }
 
 
-        public async Task<List<Wallet>> GetAllWalletsAsync()
+        public async Task<List<WalletView>> GetAllWalletsAsync()
         {
 
             //Get data from Binace Wallet
@@ -31,11 +32,11 @@ namespace Scrilla.Web.Data
             var nWallet = await n.GetBalancesAsync();
 
             //Do something to get all wallets from all exchanges here
-            var wallets = new List<Wallet>();
+            var wallets = new List<WalletView>();
 
             foreach(var w in bWallet)
             {
-                wallets.Add(new Wallet 
+                wallets.Add(new WalletView 
                 { 
                     ExchangeName = "Binance",
                     CoinName = w.Coin,
@@ -46,7 +47,7 @@ namespace Scrilla.Web.Data
 
             foreach(var w in nWallet)
             {
-                wallets.Add(new Wallet
+                wallets.Add(new WalletView
                 {
                     ExchangeName = "Newton",
                     CoinName = w.Key,
