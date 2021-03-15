@@ -1,5 +1,9 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using Scrilla.Lib.Models.CryptoCompare;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
@@ -46,7 +50,7 @@ namespace Scrilla.Lib.ExternalApis.CryptoCompare
         }
 
 
-        public async Task<string> MultiSymbolPrice(
+        public async Task<CryptoCompareConversions> MultiSymbolPrice(
             string[] cryptoSymbol,
             string[] fiatSymbols,
             bool tryConvert = true,
@@ -68,7 +72,12 @@ namespace Scrilla.Lib.ExternalApis.CryptoCompare
             var uri = BuildUri(baseUrl, path, qParams);
 
             var res = await SendApiMessageAsync(uri, HttpMethod.Get, false);
-            return res;
+
+            var converts = new CryptoCompareConversions();
+
+            converts.ConversionResults = JsonConvert.DeserializeObject<Dictionary<string,Dictionary<string,double>>>(res);
+
+            return converts;
         }
 
 

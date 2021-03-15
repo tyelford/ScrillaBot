@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Scrilla.Lib.ExternalApis.CryptoCompare;
 using Scrilla.Lib.Models.ViewModels;
 using Scrilla.Lib.TradingPlatforms.Binance;
 using Scrilla.Lib.TradingPlatforms.Newton;
@@ -30,6 +31,16 @@ namespace Scrilla.Web.Data
             //Get data from Netwon Wallet
             Newton n = new Newton(_config["Newton:ClientId"], _config["Newton:SecretKey"]);
             var nWallet = await n.GetBalancesAsync();
+
+            //Get a list of all coins from the wallets
+            var coinSymbols = bWallet.Select(x => x.Coin).ToList();
+            coinSymbols.AddRange(nWallet.Select(x => x.Key).ToList());
+
+            var coins = coinSymbols.ToHashSet<string>();
+
+            //Get Conversion Factors
+            CryptoCompare cc = new CryptoCompare(_config["CryptoCompare:ApiKey"]);
+            var res = await cc.MultiSymbolPrice(coins.ToArray<string>(), new string[] { "CAD" });
 
             //Do something to get all wallets from all exchanges here
             var wallets = new List<WalletView>();
