@@ -15,22 +15,13 @@ namespace Scrilla.Lib.TradingPlatforms
 
     public static class TradingPlatformServices
     {
-        public static void AddTradingPlatformServices(this IServiceCollection services)
+        public static void AddTradingPlatformServices(this IServiceCollection services, string[] enabledTradingPlatforms)
         {
-            var types = new List<Type> { typeof(Newton.Newton), typeof(Binance.Binance) };
-
-            foreach(var t in types)
+            foreach(var t in enabledTradingPlatforms)
             {
-                services.Add(new ServiceDescriptor(typeof(ITradingPlatform), t, ServiceLifetime.Transient));
+                var type = Type.GetType($"Scrilla.Lib.TradingPlatforms.{t}.{t}, Scrilla.Lib");
+                services.Add(new ServiceDescriptor(typeof(ITradingPlatform), type, ServiceLifetime.Transient));
             }
         }
-
-        //public static void RegisterAllTypes<T>(this IServiceCollection services, Assembly[] assemblies,
-        //ServiceLifetime lifetime = ServiceLifetime.Transient)
-        //{
-        //    var typesFromAssemblies = assemblies.SelectMany(a => a.DefinedTypes.Where(x => x.GetInterfaces().Contains(typeof(T))));
-        //    foreach (var type in typesFromAssemblies)
-        //        services.Add(new ServiceDescriptor(typeof(T), type, lifetime));
-        //}
     }
 }

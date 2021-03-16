@@ -30,7 +30,9 @@ namespace Scrilla.Web
             services.AddServerSideBlazor();
 
             services.AddBlazorServices();
-            services.AddTradingPlatformServices();
+
+            var enabledTradingPlatforms = Configuration.GetSection("ScrillaSettings:EnabledTradingPlatforms").Get<string[]>();
+            services.AddTradingPlatformServices(enabledTradingPlatforms);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
