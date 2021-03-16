@@ -75,7 +75,7 @@ else
 
     private async Task GetWallets()
     {
-        wallets = await walletService.GetAllWalletsAsync();
+        wallets = await walletService.GetAllWalletViewsAsync();
     }
 
     private bool chartsCreated = false;

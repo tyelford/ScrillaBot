@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Scrilla.Lib.ExternalApis.CryptoCompare;
 using Scrilla.Lib.Models.ViewModels;
+using Scrilla.Lib.TradingPlatforms;
 using Scrilla.Lib.TradingPlatforms.Binance;
 using Scrilla.Lib.TradingPlatforms.Newton;
 using System;
@@ -14,10 +15,27 @@ namespace Scrilla.Web.Data
     {
 
         public IConfiguration _config;
+        public IEnumerable<ITradingPlatform> _tradingPlatforms;
 
-        public WalletService(IConfiguration config)
+        public WalletService(
+            IConfiguration config,
+            IEnumerable<ITradingPlatform> tradingPlatforms)
         {
             _config = config;
+            _tradingPlatforms = tradingPlatforms;
+        }
+
+
+        public async Task<List<WalletView>> GetAllWalletViewsAsync()
+        {
+            List<WalletView> wvs = new List<WalletView>();
+
+            foreach(var tp in _tradingPlatforms)
+            {
+                wvs.AddRange(await tp.GetWalletViewsBalancesAsync());
+            }
+
+            return wvs;
         }
 
 

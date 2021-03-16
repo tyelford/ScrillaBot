@@ -5,8 +5,10 @@ using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Scrilla.Lib.Models.Binance;
+using Scrilla.Lib.Models.ViewModels;
 
 namespace Scrilla.Lib.TradingPlatforms.Binance
 {
@@ -14,17 +16,20 @@ namespace Scrilla.Lib.TradingPlatforms.Binance
     //https://binance-docs.github.io/apidocs/spot/en/#introduction
 
 
-    public class Binance: TradingPlatform
+    public class Binance: TradingPlatform, ITradingPlatform
     {
         private readonly string ApiKey;
         private readonly string SecretKey;
 
         private readonly string baseUrl = "https://api.binance.com";
 
+        private readonly IConfiguration _config;
 
-        public Binance()
+        public Binance(IConfiguration config)
         {
-
+            _config = config;
+            this.ApiKey = _config["Binance:ApiKey"];
+            this.SecretKey = _config["Binance:SecretKey"];
         }
 
         public Binance(string ApiKey, string SecretKey)
@@ -32,6 +37,29 @@ namespace Scrilla.Lib.TradingPlatforms.Binance
             this.ApiKey = ApiKey;
             this.SecretKey = SecretKey;
         }
+
+
+        #region InterfaceMethods
+
+        public async Task<List<WalletView>> GetWalletViewsBalancesAsync()
+        {
+            var balances = await GetWalletCoinsAsync();
+
+            List<WalletView> wvs = new List<WalletView>();
+
+            foreach(var b in balances)
+            {
+                wvs.Add(new WalletView
+                {
+                    ExchangeName = "Binance",
+                    CoinName = b.Coin,
+                    Amount = b.Free
+                });
+            }
+            return wvs;
+        }
+
+        #endregion
 
 
         #region System Endpoints

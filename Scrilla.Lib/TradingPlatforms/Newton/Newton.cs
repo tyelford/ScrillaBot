@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using System.Text.Json;
 using Scrilla.Lib.Models.Newton;
 using Scrilla.Lib.Models.Common;
+using Scrilla.Lib.Models.ViewModels;
+using Microsoft.Extensions.Configuration;
 
 namespace Scrilla.Lib.TradingPlatforms.Newton
 {
@@ -12,7 +14,7 @@ namespace Scrilla.Lib.TradingPlatforms.Newton
     //For Reference: 
     //https://newton.stoplight.io/docs/newton-api-docs/docs/authentication/Authentication.md
 
-    public class Newton : TradingPlatform
+    public class Newton : TradingPlatform, ITradingPlatform
     {
 
         private readonly string ClientId;
@@ -22,8 +24,14 @@ namespace Scrilla.Lib.TradingPlatforms.Newton
 
         private string baseUrl = "https://api.newton.co";
 
+        private readonly IConfiguration _config;
 
-        public Newton() { }
+        public Newton(IConfiguration config) 
+        {
+            _config = config;
+            this.ClientId = _config["Newton:ClientId"];
+            this.SecretKey = _config["Newton:SecretKey"];
+        }
 
         public Newton(string ClientId, string SecretKey)
         {
@@ -31,6 +39,27 @@ namespace Scrilla.Lib.TradingPlatforms.Newton
             this.SecretKey = SecretKey;
         }
 
+        #region InterfaceMethods
+
+        public async Task<List<WalletView>> GetWalletViewsBalancesAsync()
+        {
+            var balances = await GetBalancesAsync();
+
+            List<WalletView> wvs = new List<WalletView>();
+            foreach(var b in balances)
+            {
+                wvs.Add(new WalletView
+                {
+                    ExchangeName = "Newton",
+                    CoinName = b.Key,
+                    Amount = b.Value
+                });
+            }
+
+            return wvs;
+        }
+
+        #endregion
 
         #region PublicEndpoints
 
