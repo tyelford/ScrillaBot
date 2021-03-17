@@ -19,7 +19,7 @@ namespace Scrilla.Lib.TradingPlatforms
         private readonly string ApiKey;
         private readonly string SecretKey;
 
-        private readonly string baseUrl = "https://api.binance.com";
+        private readonly string BaseUrl = "https://api.binance.com";
 
         private readonly IConfiguration _config;
 
@@ -64,7 +64,7 @@ namespace Scrilla.Lib.TradingPlatforms
         public async Task<SystemStatus> GetSystemStatusAsync()
         {
             string path = BinanceEndpoints.GetSystemStatus;
-            var uri = BuildUri(baseUrl, path);
+            var uri = BuildUri(BaseUrl, path);
             try
             {
                 var status = await SendApiMessageAsync(uri, HttpMethod.Get, false);
@@ -90,7 +90,7 @@ namespace Scrilla.Lib.TradingPlatforms
 
             qParams.Add("timestamp", GetEpochTimeMilliseconds().ToString());
 
-            var uri = BuildUri(baseUrl, path, qParams);
+            var uri = BuildUri(BaseUrl, path, qParams);
 
             var coins = await SendApiMessageAsync(uri, HttpMethod.Get, false);
             var deseralized = JsonConvert.DeserializeObject<List<Wallet>>(coins);
@@ -114,7 +114,7 @@ namespace Scrilla.Lib.TradingPlatforms
 
             qParams.Add("timestamp", GetEpochTimeMilliseconds().ToString());
 
-            var uri = BuildUri(baseUrl, path, qParams);
+            var uri = BuildUri(BaseUrl, path, qParams);
             string res = null;
             try
             {

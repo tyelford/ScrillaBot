@@ -20,9 +20,7 @@ namespace Scrilla.Lib.TradingPlatforms
         private readonly string ClientId;
         private readonly string SecretKey;
 
-        private readonly string apiVersion = "/v1";  //Needs the leading slash here to make the auth work correctly
-
-        private string baseUrl = "https://api.newton.co";
+        private string BaseUrl = "https://api.newton.co";
 
         private readonly IConfiguration _config;
 
@@ -65,8 +63,9 @@ namespace Scrilla.Lib.TradingPlatforms
 
         public async Task<Fees> GetFeesAsync()
         {
-            string path = $"{apiVersion}/fees";
-            var uri = BuildUri(baseUrl, path);
+            string path = NewtonEndpoints.Fees;
+            var uri = BuildUri(BaseUrl, path);
+            
 
             var fees = await SendApiMessageAsync(uri, HttpMethod.Get, true);
             return JsonSerializer.Deserialize<Fees>(fees, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
@@ -77,8 +76,8 @@ namespace Scrilla.Lib.TradingPlatforms
             //This is hacky -- taking advantage of the upper exception
             try
             {
-                string path = $"{apiVersion}/health-check";
-                var uri = BuildUri(baseUrl, path);
+                string path = NewtonEndpoints.HealthCheck;
+                var uri = BuildUri(BaseUrl, path);
                 var isAlive = await SendApiMessageAsync(uri, HttpMethod.Get, true);
                 return true;
             }
@@ -91,32 +90,32 @@ namespace Scrilla.Lib.TradingPlatforms
 
         public async Task<Dictionary<string, TradeLimits>> GetMaximumTradeAmountsAsync()
         {
-            string path = $"{apiVersion}/order/maximums";
-            var uri = BuildUri(baseUrl, path);
+            string path = NewtonEndpoints.MaximumTradeAmounts;
+            var uri = BuildUri(BaseUrl, path);
             string max = await SendApiMessageAsync(uri, HttpMethod.Get, true);
             return JsonSerializer.Deserialize<Dictionary<string, TradeLimits>>(max, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         }
 
         public async Task<Dictionary<string, TradeLimits>> GetMinimumTradeAmountsAsync()
         {
-            string path = $"{apiVersion}/order/minimums";
-            var uri = BuildUri(baseUrl, path);
+            string path = NewtonEndpoints.MinimumTradeAmounts;
+            var uri = BuildUri(BaseUrl, path);
             string min = await SendApiMessageAsync(uri, HttpMethod.Get, true);
             return JsonSerializer.Deserialize<Dictionary<string, TradeLimits>>(min, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         }
 
         public async Task<Dictionary<string, Ticks>> GetTickSizesAsync()
         {
-            string path = $"{apiVersion}/order/tick-sizes";
-            var uri = BuildUri(baseUrl, path);
+            string path = NewtonEndpoints.TickSizes;
+            var uri = BuildUri(BaseUrl, path);
             string ticks = await SendApiMessageAsync(uri, HttpMethod.Get, true);
             return JsonSerializer.Deserialize<Dictionary<string, Ticks>>(ticks, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         }
 
         public async Task<List<string>> GetSymbolsAsync()
         {
-            string path = $"{apiVersion}/symbols";
-            var uri = BuildUri(baseUrl, path);
+            string path = NewtonEndpoints.Symbols;
+            var uri = BuildUri(BaseUrl, path);
             string symbols = await SendApiMessageAsync(uri, HttpMethod.Get, true);
             return JsonSerializer.Deserialize<List<string>>(symbols);
         }
@@ -131,7 +130,7 @@ namespace Scrilla.Lib.TradingPlatforms
         /// <returns>Dictionary<string,decimal>/returns>
         public async Task<Dictionary<string, double>> GetBalancesAsync(string asset = null)
         {
-            string path = $"{apiVersion}/balances";
+            string path = NewtonEndpoints.Balances;
             
             var qParams = new Dictionary<string, string>();
             if (asset != null)
@@ -139,7 +138,7 @@ namespace Scrilla.Lib.TradingPlatforms
                 qParams.Add("asset", asset);
             }
 
-            var uri = BuildUri(baseUrl, path, qParams);
+            var uri = BuildUri(BaseUrl, path, qParams);
 
             var balances = await SendApiMessageAsync(uri, HttpMethod.Get, false);
 
@@ -154,8 +153,8 @@ namespace Scrilla.Lib.TradingPlatforms
         /// <returns></returns>
         public async Task<bool> CancelOrderAsync()
         {
-            string path = $"{apiVersion}/order/cancel";
-            var uri = BuildUri(baseUrl, path);
+            string path = NewtonEndpoints.CancelOrder;
+            var uri = BuildUri(BaseUrl, path);
             try
             {
                 var canceled = await SendApiMessageAsync(uri, HttpMethod.Post, false);
@@ -187,7 +186,7 @@ namespace Scrilla.Lib.TradingPlatforms
             string symbol = null,
             TimeInForce.Type timeInForce = TimeInForce.Type.NONE)
         {
-            string path = $"{apiVersion}/order/history";
+            string path = NewtonEndpoints.OrderHistory;
 
             var qParams = new Dictionary<string, string>();
 
@@ -206,7 +205,7 @@ namespace Scrilla.Lib.TradingPlatforms
             if (symbol != null) qParams.Add("symbol", symbol);
             if (timeInForce != TimeInForce.Type.NONE) qParams.Add("time_in_force", timeInForce.ToString());
 
-            var uri = BuildUri(baseUrl, path, qParams);
+            var uri = BuildUri(BaseUrl, path, qParams);
 
             var orderHistory = await SendApiMessageAsync(uri, HttpMethod.Get, false);
 
@@ -222,8 +221,8 @@ namespace Scrilla.Lib.TradingPlatforms
         public async Task CreateNewOrderAsync()
         {
             //TODO: The documentation here is not good, needs review
-            string path = $"{apiVersion}/order/new";
-            var uri = BuildUri(baseUrl, path);
+            string path = NewtonEndpoints.NewOrder;
+            var uri = BuildUri(BaseUrl, path);
             var newOrder = await SendApiMessageAsync(uri, HttpMethod.Post, false);
 
         }
@@ -235,7 +234,7 @@ namespace Scrilla.Lib.TradingPlatforms
             string symbol = null,
             TimeInForce.Type timeInForce = TimeInForce.Type.NONE)
         {
-            string path = $"{apiVersion}/order/open";
+            string path = NewtonEndpoints.OpenOrders;
 
             var qParams = new Dictionary<string, string>();
 
@@ -244,7 +243,7 @@ namespace Scrilla.Lib.TradingPlatforms
             if (symbol != null) qParams.Add("symbol", symbol);
             if (timeInForce != TimeInForce.Type.NONE) qParams.Add("time_in_force", timeInForce.ToString());
 
-            var uri = BuildUri(baseUrl, path, qParams);
+            var uri = BuildUri(BaseUrl, path, qParams);
 
             var openOrders = await SendApiMessageAsync(uri, HttpMethod.Get, false);
 
