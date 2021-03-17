@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Scrilla.Lib.TradingPlatforms.Binance
+namespace Scrilla.Lib.TradingPlatforms
 {
     public class BinanceEndpoints
     {

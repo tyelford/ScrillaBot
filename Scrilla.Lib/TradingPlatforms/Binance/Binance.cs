@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 using Scrilla.Lib.Models.Binance;
 using Scrilla.Lib.Models.ViewModels;
 
-namespace Scrilla.Lib.TradingPlatforms.Binance
+namespace Scrilla.Lib.TradingPlatforms
 {
     //For reference:
     //https://binance-docs.github.io/apidocs/spot/en/#introduction

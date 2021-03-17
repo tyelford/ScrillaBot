@@ -19,7 +19,7 @@ namespace Scrilla.Lib.TradingPlatforms
         {
             foreach(var t in enabledTradingPlatforms)
             {
-                var type = Type.GetType($"Scrilla.Lib.TradingPlatforms.{t}.{t}, Scrilla.Lib");
+                var type = Type.GetType($"Scrilla.Lib.TradingPlatforms.{t}, Scrilla.Lib");
                 services.Add(new ServiceDescriptor(typeof(ITradingPlatform), type, ServiceLifetime.Transient));
             }
         }

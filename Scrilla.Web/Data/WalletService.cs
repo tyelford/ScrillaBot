@@ -2,8 +2,6 @@
 using Scrilla.Lib.ExternalApis.CryptoCompare;
 using Scrilla.Lib.Models.ViewModels;
 using Scrilla.Lib.TradingPlatforms;
-using Scrilla.Lib.TradingPlatforms.Binance;
-using Scrilla.Lib.TradingPlatforms.Newton;
 using System;
 using System.Collections.Generic;
 using System.Linq;

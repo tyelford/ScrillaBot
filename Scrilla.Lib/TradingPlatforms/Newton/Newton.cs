@@ -8,7 +8,7 @@ using Scrilla.Lib.Models.Common;
 using Scrilla.Lib.Models.ViewModels;
 using Microsoft.Extensions.Configuration;
 
-namespace Scrilla.Lib.TradingPlatforms.Newton
+namespace Scrilla.Lib.TradingPlatforms
 {
 
     //For Reference: 

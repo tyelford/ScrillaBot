@@ -1,6 +1,5 @@
 ﻿using Scrilla.Lib.ExternalApis.CryptoCompare;
-using Scrilla.Lib.TradingPlatforms.Binance;
-using Scrilla.Lib.TradingPlatforms.Newton;
+using Scrilla.Lib.TradingPlatforms;
 using System;
 using System.Threading.Tasks;
 
