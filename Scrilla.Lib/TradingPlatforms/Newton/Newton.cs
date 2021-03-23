@@ -24,7 +24,7 @@ namespace Scrilla.Lib.TradingPlatforms
 
         private readonly IConfiguration _config;
 
-        public Newton(IConfiguration config) 
+        public Newton(IConfiguration config) : base(config)
         {
             _config = config;
             this.ClientId = _config["Newton:ClientId"];

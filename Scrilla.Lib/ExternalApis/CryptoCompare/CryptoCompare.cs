@@ -16,7 +16,7 @@ namespace Scrilla.Lib.ExternalApis.CryptoCompare
 
         private readonly string ApiKey;
 
-        private string baseUrl = "https://min-api.cryptocompare.com";
+        private string BaseUrl = "https://min-api.cryptocompare.com";
 
         public CryptoCompare(string ApiKey)
         {
@@ -43,7 +43,7 @@ namespace Scrilla.Lib.ExternalApis.CryptoCompare
             qParams.Add("tryConvert", tryConvert.ToString().ToLower());
             qParams.Add("relaxedValidation", relaxedValidation.ToString().ToLower());
 
-            var uri = BuildUri(baseUrl, path, qParams);
+            var uri = BuildUri(BaseUrl, path, qParams);
 
             var res = await SendApiMessageAsync(uri, HttpMethod.Get, false);
             return res;
@@ -69,7 +69,7 @@ namespace Scrilla.Lib.ExternalApis.CryptoCompare
             qParams.Add("tryConvert", tryConvert.ToString().ToLower());
             qParams.Add("relaxedValidation", relaxedValidation.ToString().ToLower());
 
-            var uri = BuildUri(baseUrl, path, qParams);
+            var uri = BuildUri(BaseUrl, path, qParams);
 
             var res = await SendApiMessageAsync(uri, HttpMethod.Get, false);
 

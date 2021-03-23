@@ -8,6 +8,7 @@ using System.Web;
 using System.Security.Cryptography;
 using System.Text.Json;
 using Scrilla.Lib.ExternalApis;
+using Microsoft.Extensions.Configuration;
 
 namespace Scrilla.Lib.TradingPlatforms
 {
@@ -19,10 +20,20 @@ namespace Scrilla.Lib.TradingPlatforms
             PropertyNameCaseInsensitive = true
         };
 
-       
-        
+        private readonly IConfiguration _config;
 
-        
+
+        public TradingPlatform() { }
+
+        public TradingPlatform(IConfiguration config)
+        {
+            _config = config;
+        }
+
+        protected string GetFiatConversion(string fiatToConvertTo)
+        {
+            return null;
+        }
 
         protected byte[] HashHMAC256(byte[] key, byte[] message)
         {

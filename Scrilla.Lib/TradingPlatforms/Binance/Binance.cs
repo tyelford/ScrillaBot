@@ -23,7 +23,7 @@ namespace Scrilla.Lib.TradingPlatforms
 
         private readonly IConfiguration _config;
 
-        public Binance(IConfiguration config)
+        public Binance(IConfiguration config) : base(config)
         {
             _config = config;
             this.ApiKey = _config["Binance:ApiKey"];
