@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Scrilla.Lib.Attributes;
+using Scrilla.Lib.Generics;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,11 +8,14 @@ using System.Threading.Tasks;
 
 namespace Scrilla.Lib.Models.Binance
 {
-    public class Wallet
+    [WalletSource(typeof(Wallet), "Binance")]
+    public class Wallet : BaseWallet
     {
+        [WalletProperty("CoinName")]
         public string Coin { get; set; }
         public string Name { get; set; }
         public bool DepositAllEnable { get; set; }
+        [WalletProperty("Amount")]
         public double Free { get; set; }
         public double Freeze { get; set; }
         public double Ipoable { get; set; }
