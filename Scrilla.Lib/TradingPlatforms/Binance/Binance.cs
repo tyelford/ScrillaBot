@@ -67,7 +67,7 @@ namespace Scrilla.Lib.TradingPlatforms
             var uri = BuildUri(BaseUrl, path);
             try
             {
-                var status = await SendApiMessageAsync(uri, HttpMethod.Get, false);
+                var status = await SendApiMessageAsync(uri, HttpMethod.Get, isPublic:false);
                 return JsonConvert.DeserializeObject<SystemStatus>(status);
             }
             catch(Exception err)

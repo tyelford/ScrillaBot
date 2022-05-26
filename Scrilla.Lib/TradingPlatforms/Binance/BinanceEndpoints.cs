@@ -9,7 +9,7 @@ namespace Scrilla.Lib.TradingPlatforms
     public class BinanceEndpoints
     {
 
-        public static string GetSystemStatus = "/wapi/v3/systemStatus.html";
+        public static string GetSystemStatus = "/sapi/v1/system/status";
 
         public static string GetOpenOrders = "/api/v3/openOrders";
         public static string GetWalletCoins = "/sapi/v1/capital/config/getall";
