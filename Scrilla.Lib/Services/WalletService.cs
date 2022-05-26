@@ -39,7 +39,7 @@ namespace Scrilla.Lib.Services
         /// </summary>
         /// <param name="baseWallet"></param>
         /// <returns></returns>
-        public Wallet MakeScrillaWalletFromExchange(BaseWallet baseWallet)
+        public Wallet MakeScrillaWalletFromExchangeWallet(BaseWallet baseWallet)
         {
             try
             {

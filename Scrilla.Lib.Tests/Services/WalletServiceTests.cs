@@ -26,7 +26,7 @@ namespace Scrilla.Lib.Services.Tests
 
             try
             {
-                var sWallet = walletService.MakeScrillaWalletFromExchange(wallet);
+                var sWallet = walletService.MakeScrillaWalletFromExchangeWallet(wallet);
                 Assert.IsNotNull(sWallet);
             }
             catch (Exception ex)
@@ -50,7 +50,7 @@ namespace Scrilla.Lib.Services.Tests
 
             try
             {
-                var sWallet = walletService.MakeScrillaWalletFromExchange(wallet);
+                var sWallet = walletService.MakeScrillaWalletFromExchangeWallet(wallet);
                 Assert.IsNotNull(sWallet);
             }
             catch (Exception ex)
